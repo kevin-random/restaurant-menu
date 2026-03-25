@@ -381,6 +381,80 @@
   .empty-cart .e-icon { font-size: 3rem; margin-bottom: 10px; }
   .empty-cart p { font-size: .9rem; }
 
+  /* ── TABLE CONFLICT MODAL ─────────────────────────── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.6); z-index: 500;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-content {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: var(--shadow);
+  }
+  .modal-content h3 {
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 12px;
+    color: var(--navy);
+  }
+  .modal-content p {
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-size: .9rem;
+  }
+  .table-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+  }
+  .table-option {
+    padding: 12px;
+    border: 2px solid #e0e4f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .table-option:hover, .table-option.selected {
+    border-color: var(--gold);
+    background: var(--cream);
+  }
+  .table-option.occupied {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+  .modal-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .modal-btn.primary {
+    background: var(--navy);
+    color: #fff;
+  }
+  .modal-btn.secondary {
+    background: #f0f2f8;
+    color: var(--navy);
+  }
+
   @media (min-width: 480px) {
     .items-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
   }
@@ -394,6 +468,19 @@
   <h2>Connect to Restaurant WiFi</h2>
   <p>You need to be connected to the restaurant's WiFi network to place an order here.<br><br>
   Please connect and try again, or ask a staff member for assistance.</p>
+</div>
+
+<!-- Table Conflict Modal -->
+<div class="modal-overlay" id="tableModal">
+  <div class="modal-content">
+    <h3>⚠️ Table Occupied</h3>
+    <p id="tableModalText">This table already has an active order. Please select another table:</p>
+    <div class="table-list" id="tableList"></div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeTableModal()">Cancel</button>
+      <button class="modal-btn primary" id="confirmTableBtn" onclick="confirmTableChange()">Confirm</button>
+    </div>
+  </div>
 </div>
 
 <!-- Success Screen -->
@@ -464,21 +551,21 @@
 //  CONFIG — YOU MUST FILL THESE IN
 // ═══════════════════════════════════════════════════════════════
 const CONFIG = {
-  SUPABASE_URL:    'https://czwfskjedvmkmbhgugbp.supabase.co',  // ← your supabase project URL
-  SUPABASE_ANON:   'sb_publishable_S-U75D86AhZb2bpteSrzAA_W0g4xUcX',                     // ← your supabase anon key
-  STORE_NAME:      'POS-HUB',                     // ← your restaurant name
-  // Secret token — must match what's in the QR code URL
-  // e.g. your QR URL: https://your-site.vercel.app/?t=MYTOKEN2024&table=1
-  SECRET_TOKEN:    'MYREST2024',          // ← change this!
+  SUPABASE_URL:    'https://czwfskjedvmkmbhgugbp.supabase.co',
+  SUPABASE_ANON:   'sb_publishable_S-U75D86AhZb2bpteSrzAA_W0g4xUcX',
+  STORE_NAME:      'POS-HUB',
+  SECRET_TOKEN:    'MYREST2024',
 };
 
 // ═══════════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════════
-let menuData  = [];   // [{category, icon, items:[...]}]
-let cart      = {};   // { itemId: { item, qty, note } }
+let menuData  = [];
+let cart      = {};
 let tableNum  = '';
 let tableId   = 0;
+let availableTables = []; // Stores tables status from DB
+let pendingTableChange = null; // For table conflict resolution
 
 // ═══════════════════════════════════════════════════════════════
 //  BOOT
@@ -489,42 +576,67 @@ document.addEventListener('DOMContentLoaded', async () => {
   tableNum     = params.get('table') || '';
   tableId      = parseInt(params.get('tid') || '0');
 
-  // ── 1. Token check (WiFi gate) ──────────────────────────────
   if (token !== CONFIG.SECRET_TOKEN) {
     document.getElementById('wifiError').classList.add('show');
     return;
   }
 
-  // ── 2. Set store name & table ───────────────────────────────
   document.getElementById('storeName').textContent = '🍽️ ' + CONFIG.STORE_NAME;
   document.getElementById('tableBadge').textContent =
     tableNum ? 'Table ' + tableNum : 'Walk-in';
   document.title = CONFIG.STORE_NAME + ' — Order';
 
-  // ── 3. Fetch menu from Supabase ─────────────────────────────
   await loadMenu();
+  await loadTableStatus(); // Load which tables are occupied
 });
+
+// ═══════════════════════════════════════════════════════════════
+//  LOAD TABLE STATUS (to check for conflicts)
+// ═══════════════════════════════════════════════════════════════
+async function loadTableStatus() {
+  try {
+    const res = await fetch(
+      CONFIG.SUPABASE_URL + '/rest/v1/RestaurantTables?select=TableID,TableName,IsActive',
+      { headers: sbHeaders() }
+    );
+    const tables = await res.json();
+    
+    // Also check which tables have active orders
+    const ordersRes = await fetch(
+      CONFIG.SUPABASE_URL + '/rest/v1/RestaurantOrders?select=TableID,Status&Status=eq.Open&Status=eq.Preparing&Status=eq.Bill',
+      { headers: sbHeaders() }
+    );
+    const activeOrders = await ordersRes.json();
+    const occupiedTableIds = new Set(activeOrders.map(o => o.TableID).filter(id => id !== null));
+    
+    availableTables = tables.map(t => ({
+      id: t.TableID,
+      name: t.TableName,
+      occupied: occupiedTableIds.has(t.TableID),
+      isCurrent: t.TableID === tableId
+    }));
+  } catch(e) {
+    console.error('Failed to load table status:', e);
+  }
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  LOAD MENU FROM SUPABASE
 // ═══════════════════════════════════════════════════════════════
 async function loadMenu() {
   try {
-    // Fetch categories
     const catRes = await fetch(
       CONFIG.SUPABASE_URL + '/rest/v1/menu_categories?is_active=eq.true&order=sort_order',
       { headers: sbHeaders() }
     );
     const categories = await catRes.json();
 
-    // Fetch items
     const itemRes = await fetch(
       CONFIG.SUPABASE_URL + '/rest/v1/menu_items?is_active=eq.true&order=sort_order',
       { headers: sbHeaders() }
     );
     const items = await itemRes.json();
 
-    // Group
     menuData = categories.map(cat => ({
       id:    cat.id,
       name:  cat.name,
@@ -591,7 +703,6 @@ function renderMenu() {
     const section = document.createElement('div');
     section.id = 'section-' + cat.id;
 
-    // Section header
     const hdr = document.createElement('div');
     hdr.className = 'section-header';
     hdr.innerHTML =
@@ -600,7 +711,6 @@ function renderMenu() {
       '<span class="count">' + cat.items.length + '</span>';
     section.appendChild(hdr);
 
-    // Items grid
     const grid = document.createElement('div');
     grid.className = 'items-grid';
     cat.items.forEach(item => grid.appendChild(buildItemCard(item)));
@@ -616,7 +726,6 @@ function buildItemCard(item) {
 
   const inCart = cart[item.id];
 
-  // Image or placeholder
   if (item.image_url) {
     card.innerHTML +=
       '<img class="item-img" src="' + item.image_url +
@@ -645,7 +754,6 @@ function buildItemCard(item) {
 function refreshCard(itemId) {
   const oldCard = document.getElementById('card-' + itemId);
   if (!oldCard) return;
-  // Find item
   for (const cat of menuData) {
     const item = cat.items.find(i => i.id === itemId);
     if (item) {
@@ -752,11 +860,71 @@ function updateItemNote(itemId, val) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SUBMIT ORDER
+//  TABLE CONFLICT MODAL
+// ═══════════════════════════════════════════════════════════════
+function showTableConflictModal() {
+  const modal = document.getElementById('tableModal');
+  const list = document.getElementById('tableList');
+  const confirmBtn = document.getElementById('confirmTableBtn');
+  
+  list.innerHTML = '';
+  confirmBtn.disabled = true;
+  pendingTableChange = null;
+  
+  // Filter out occupied tables and current table
+  const freeTables = availableTables.filter(t => !t.occupied && !t.isCurrent);
+  
+  if (freeTables.length === 0) {
+    list.innerHTML = '<p style="color:var(--red);text-align:center;">No available tables. Please ask staff.</p>';
+  } else {
+    freeTables.forEach(t => {
+      const div = document.createElement('div');
+      div.className = 'table-option';
+      div.innerHTML = '<span>' + escHtml(t.name) + '</span><span>🪑 Free</span>';
+      div.onclick = () => selectTableOption(div, t);
+      list.appendChild(div);
+    });
+  }
+  
+  modal.classList.add('show');
+}
+
+function selectTableOption(element, table) {
+  document.querySelectorAll('.table-option').forEach(el => el.classList.remove('selected'));
+  element.classList.add('selected');
+  pendingTableChange = table;
+  document.getElementById('confirmTableBtn').disabled = false;
+}
+
+function closeTableModal() {
+  document.getElementById('tableModal').classList.remove('show');
+  pendingTableChange = null;
+}
+
+function confirmTableChange() {
+  if (!pendingTableChange) return;
+  
+  // Update the current table
+  tableId = pendingTableChange.id;
+  tableNum = pendingTableChange.name.replace('Table ', '');
+  
+  document.getElementById('tableBadge').textContent = 'Table ' + tableNum;
+  closeTableModal();
+  
+  // Retry submission
+  submitOrder();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SUBMIT ORDER - FIXED VERSION
 // ═══════════════════════════════════════════════════════════════
 async function submitOrder() {
   const name = document.getElementById('customerName').value.trim();
   const items = Object.values(cart);
+  const btn = document.getElementById('submitBtn');
+
+  // Prevent double submission
+  if (btn.disabled || btn.classList.contains('loading')) return;
 
   if (!name) {
     alert('Please enter your name first.');
@@ -769,7 +937,14 @@ async function submitOrder() {
     return;
   }
 
-  const btn = document.getElementById('submitBtn');
+  // Check if current table is occupied
+  const currentTable = availableTables.find(t => t.id === tableId);
+  if (currentTable && currentTable.occupied && !currentTable.isCurrent) {
+    // This shouldn't happen often, but handle it
+    showTableConflictModal();
+    return;
+  }
+
   btn.disabled = true;
   btn.classList.add('loading');
   btn.textContent = 'Sending...';
@@ -791,7 +966,7 @@ async function submitOrder() {
     })),
     total_usd: items.reduce((s, e) => s + e.item.price_usd * e.qty, 0),
     created_at: new Date().toISOString(),
-    expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString() // 2 hours
+    expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
   };
 
   try {
@@ -804,9 +979,12 @@ async function submitOrder() {
       }
     );
 
-    if (!res.ok) throw new Error('Server error ' + res.status);
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error('Server error: ' + res.status + ' - ' + errorText);
+    }
 
-    // ── Show success screen ──────────────────────────────────
+    // Success - reset form
     closeCart();
     const successItems = document.getElementById('successItems');
     successItems.innerHTML = items.map(e =>
@@ -818,24 +996,28 @@ async function submitOrder() {
 
     document.getElementById('successScreen').classList.add('show');
 
-    // Countdown to reset
+    // Reset cart
+    cart = {};
+    updateCartBadge();
+    renderMenu();
+    document.getElementById('orderNote').value = '';
+
+    // Countdown
     let sec = 10;
     const cd = setInterval(() => {
       sec--;
       document.getElementById('successCountdown').textContent = sec;
       if (sec <= 0) {
         clearInterval(cd);
-        cart = {};
-        updateCartBadge();
-        renderMenu();
         document.getElementById('successScreen').classList.remove('show');
         document.getElementById('customerName').value = '';
-        document.getElementById('orderNote').value = '';
       }
     }, 1000);
 
   } catch(e) {
-    alert('Could not send order. Please check your connection and try again.');
+    alert('Could not send order: ' + e.message);
+  } finally {
+    // Always reset button state
     btn.disabled = false;
     btn.classList.remove('loading');
     btn.textContent = 'Send Order to Cashier 🍽️';
