@@ -336,6 +336,7 @@
     background: var(--cream); z-index: 300;
     flex-direction: column; align-items: center; justify-content: center;
     padding: 32px; text-align: center;
+    overflow-y: auto;
   }
   .success-screen.show { display: flex; }
   .success-icon { font-size: 5rem; margin-bottom: 20px; animation: pop .4s ease; }
@@ -358,6 +359,42 @@
     font-size: .9rem; list-style: none;
   }
   .success-items li:last-child { border-bottom: none; }
+
+  /* ── READY TIME BANNER ───────────────────────────── */
+  .ready-time-banner {
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    color: var(--gold2);
+    border-radius: var(--radius);
+    padding: 18px 24px;
+    margin: 0 0 20px;
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 20px rgba(26,31,54,.2);
+  }
+  .ready-time-banner .clock-icon {
+    font-size: 2.2rem;
+    flex-shrink: 0;
+  }
+  .ready-time-banner .ready-text {
+    text-align: left;
+  }
+  .ready-time-banner .ready-label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: rgba(240,201,110,.7);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 3px;
+  }
+  .ready-time-banner .ready-time {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gold2);
+  }
 
   /* ── WIFI ERROR ───────────────────────────────────── */
   .wifi-error {
@@ -489,7 +526,19 @@
   <h2>Order Sent!</h2>
   <p>Your request has been sent to the cashier.<br>A staff member will assist you shortly.</p>
   <ul class="success-items" id="successItems"></ul>
-  <p style="color:var(--muted);font-size:.85rem;margin-top:8px">This screen will close in <span id="successCountdown">10</span>s</p>
+
+  <!-- ── READY TIME BANNER ── -->
+  <div class="ready-time-banner">
+    <div class="clock-icon">⏱️</div>
+    <div class="ready-text">
+      <div class="ready-label">Estimated Ready Time</div>
+      <div class="ready-time">15 – 25 minutes</div>
+    </div>
+  </div>
+
+  <p style="color:var(--muted);font-size:.85rem;margin-top:4px">
+    This screen will close in <span id="successCountdown">10</span>s
+  </p>
 </div>
 
 <!-- Main App -->
@@ -564,8 +613,8 @@ let menuData  = [];
 let cart      = {};
 let tableNum  = '';
 let tableId   = 0;
-let availableTables = []; // Stores tables status from DB
-let pendingTableChange = null; // For table conflict resolution
+let availableTables = [];
+let pendingTableChange = null;
 
 // ═══════════════════════════════════════════════════════════════
 //  BOOT
@@ -587,11 +636,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.title = CONFIG.STORE_NAME + ' — Order';
 
   await loadMenu();
-  await loadTableStatus(); // Load which tables are occupied
+  await loadTableStatus();
 });
 
 // ═══════════════════════════════════════════════════════════════
-//  LOAD TABLE STATUS (to check for conflicts)
+//  LOAD TABLE STATUS
 // ═══════════════════════════════════════════════════════════════
 async function loadTableStatus() {
   try {
@@ -600,15 +649,14 @@ async function loadTableStatus() {
       { headers: sbHeaders() }
     );
     const tables = await res.json();
-    
-    // Also check which tables have active orders
+
     const ordersRes = await fetch(
       CONFIG.SUPABASE_URL + '/rest/v1/RestaurantOrders?select=TableID,Status&Status=eq.Open&Status=eq.Preparing&Status=eq.Bill',
       { headers: sbHeaders() }
     );
     const activeOrders = await ordersRes.json();
     const occupiedTableIds = new Set(activeOrders.map(o => o.TableID).filter(id => id !== null));
-    
+
     availableTables = tables.map(t => ({
       id: t.TableID,
       name: t.TableName,
@@ -866,14 +914,13 @@ function showTableConflictModal() {
   const modal = document.getElementById('tableModal');
   const list = document.getElementById('tableList');
   const confirmBtn = document.getElementById('confirmTableBtn');
-  
+
   list.innerHTML = '';
   confirmBtn.disabled = true;
   pendingTableChange = null;
-  
-  // Filter out occupied tables and current table
+
   const freeTables = availableTables.filter(t => !t.occupied && !t.isCurrent);
-  
+
   if (freeTables.length === 0) {
     list.innerHTML = '<p style="color:var(--red);text-align:center;">No available tables. Please ask staff.</p>';
   } else {
@@ -885,7 +932,7 @@ function showTableConflictModal() {
       list.appendChild(div);
     });
   }
-  
+
   modal.classList.add('show');
 }
 
@@ -903,27 +950,21 @@ function closeTableModal() {
 
 function confirmTableChange() {
   if (!pendingTableChange) return;
-  
-  // Update the current table
   tableId = pendingTableChange.id;
   tableNum = pendingTableChange.name.replace('Table ', '');
-  
   document.getElementById('tableBadge').textContent = 'Table ' + tableNum;
   closeTableModal();
-  
-  // Retry submission
   submitOrder();
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SUBMIT ORDER - FIXED VERSION
+//  SUBMIT ORDER
 // ═══════════════════════════════════════════════════════════════
 async function submitOrder() {
   const name = document.getElementById('customerName').value.trim();
   const items = Object.values(cart);
   const btn = document.getElementById('submitBtn');
 
-  // Prevent double submission
   if (btn.disabled || btn.classList.contains('loading')) return;
 
   if (!name) {
@@ -937,10 +978,8 @@ async function submitOrder() {
     return;
   }
 
-  // Check if current table is occupied
   const currentTable = availableTables.find(t => t.id === tableId);
   if (currentTable && currentTable.occupied && !currentTable.isCurrent) {
-    // This shouldn't happen often, but handle it
     showTableConflictModal();
     return;
   }
@@ -984,7 +1023,6 @@ async function submitOrder() {
       throw new Error('Server error: ' + res.status + ' - ' + errorText);
     }
 
-    // Success - reset form
     closeCart();
     const successItems = document.getElementById('successItems');
     successItems.innerHTML = items.map(e =>
@@ -996,7 +1034,6 @@ async function submitOrder() {
 
     document.getElementById('successScreen').classList.add('show');
 
-    // Reset cart
     cart = {};
     updateCartBadge();
     renderMenu();
@@ -1017,7 +1054,6 @@ async function submitOrder() {
   } catch(e) {
     alert('Could not send order: ' + e.message);
   } finally {
-    // Always reset button state
     btn.disabled = false;
     btn.classList.remove('loading');
     btn.textContent = 'Send Order to Cashier 🍽️';
