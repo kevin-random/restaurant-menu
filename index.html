@@ -21,6 +21,8 @@
     --redL:   #ffebee;
     --radius: 16px;
     --shadow: 0 4px 24px rgba(26,31,54,.10);
+    --whatsapp: #25d366;
+    --whatsapp-dark: #128c7e;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -41,6 +43,8 @@
   .header-top {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   .store-name {
     font-family: 'Playfair Display', serif;
@@ -48,31 +52,71 @@
     font-size: 1.45rem; font-weight: 700;
     letter-spacing: .5px;
   }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
   .table-badge {
     background: var(--gold);
     color: var(--navy);
     font-weight: 700; font-size: .82rem;
-    padding: 5px 14px; border-radius: 20px;
+    padding: 8px 16px; border-radius: 20px;
     white-space: nowrap;
   }
-  .cart-btn {
-    background: var(--gold);
-    border: none; border-radius: 30px;
-    padding: 8px 18px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700; font-size: .92rem;
-    color: var(--navy); cursor: pointer;
-    display: flex; align-items: center; gap: 7px;
-    transition: transform .15s, background .15s;
+  
+  /* ── ORDER BUTTONS (Prominent) ─────────────────── */
+  .order-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
   }
-  .cart-btn:active { transform: scale(.96); }
-  .cart-btn .badge {
+  
+  .order-btn {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    border: none; border-radius: 30px;
+    padding: 14px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 800; font-size: 1.1rem;
+    color: var(--navy); cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    transition: all .2s ease;
+    box-shadow: 0 4px 15px rgba(212, 168, 83, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .order-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 168, 83, 0.5);
+  }
+  .order-btn:active { transform: scale(.96) translateY(0); }
+  
+  .order-btn .badge {
     background: var(--navy);
     color: var(--gold2);
-    border-radius: 50%; width: 20px; height: 20px;
+    border-radius: 50%; min-width: 26px; height: 26px;
     display: flex; align-items: center; justify-content: center;
-    font-size: .75rem; font-weight: 800;
+    font-size: .85rem; font-weight: 800;
+    padding: 0 6px;
   }
+
+  .whatsapp-btn {
+    background: linear-gradient(135deg, var(--whatsapp), var(--whatsapp-dark));
+    border: none; border-radius: 30px;
+    padding: 14px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    color: #fff; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: all .2s ease;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+  }
+  .whatsapp-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+  }
+  .whatsapp-btn:active { transform: scale(.96) translateY(0); }
 
   /* ── CATEGORY PILLS ──────────────────────────────── */
   .cat-scroll {
@@ -259,6 +303,57 @@
   .cart-item-info { flex: 1; }
   .cart-item-name { font-weight: 700; font-size: .92rem; margin-bottom: 3px; }
   .cart-item-price { color: var(--green); font-weight: 700; font-size: .85rem; }
+  
+  /* ── EXTRAS SECTION IN CART ─────────────────────── */
+  .extras-section {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--cream);
+    border-radius: 10px;
+    border: 1px solid #e0e4f0;
+  }
+  .extras-title {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .extra-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    background: var(--card);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+    border: 2px solid transparent;
+  }
+  .extra-option:hover {
+    border-color: var(--gold);
+  }
+  .extra-option.selected {
+    border-color: var(--gold);
+    background: var(--gold2);
+  }
+  .extra-option-name {
+    font-size: .85rem;
+    font-weight: 600;
+  }
+  .extra-option-price {
+    font-size: .8rem;
+    color: var(--green);
+    font-weight: 700;
+  }
+  .extra-checkbox {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--gold);
+  }
+  
   .note-input {
     width: 100%; margin-top: 6px;
     border: 1.5px solid #e0e4f0; border-radius: 8px;
@@ -321,6 +416,7 @@
     font-weight: 700; font-size: 1.05rem;
     cursor: pointer; letter-spacing: .3px;
     transition: background .2s, transform .15s;
+    margin-bottom: 10px;
   }
   .submit-btn:active { transform: scale(.98); }
   .submit-btn:disabled {
@@ -494,6 +590,23 @@
 
   @media (min-width: 480px) {
     .items-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+    .order-btn { padding: 16px 32px; font-size: 1.2rem; }
+    .whatsapp-btn { padding: 16px 28px; font-size: 1.1rem; }
+  }
+  
+  @media (max-width: 400px) {
+    .header-top {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .order-buttons {
+      width: 100%;
+      justify-content: stretch;
+    }
+    .order-btn, .whatsapp-btn {
+      flex: 1;
+      justify-content: center;
+    }
   }
 </style>
 </head>
@@ -548,11 +661,16 @@
   <div class="header">
     <div class="header-top">
       <span class="store-name" id="storeName">🍽️ Restaurant</span>
-      <div style="display:flex;align-items:center;gap:8px">
+      <div class="header-right">
         <span class="table-badge" id="tableBadge">Table —</span>
-        <button class="cart-btn" onclick="openCart()">
-          🛒 Cart <span class="badge" id="cartCount">0</span>
-        </button>
+        <div class="order-buttons">
+          <button class="order-btn" onclick="openCart()">
+            🛒 Order <span class="badge" id="cartCount">0</span>
+          </button>
+          <button class="whatsapp-btn" onclick="orderByWhatsApp()">
+            💬 WhatsApp
+          </button>
+        </div>
       </div>
     </div>
     <div class="cat-scroll" id="catScroll"></div>
@@ -604,17 +722,20 @@ const CONFIG = {
   SUPABASE_ANON:   'sb_publishable_S-U75D86AhZb2bpteSrzAA_W0g4xUcX',
   STORE_NAME:      'POS-HUB',
   SECRET_TOKEN:    'MYREST2024',
+  PHONE_NUMBER:    '+9613123456', // ← Restaurant WhatsApp number (with country code)
 };
 
 // ═══════════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════════
 let menuData  = [];
-let cart      = {};
+let allItems  = []; // Flat list of all items including extras
+let cart      = {}; // { itemId: { item, qty, note, extras: [{extraItem, qty}] } }
 let tableNum  = '';
 let tableId   = 0;
 let availableTables = [];
 let pendingTableChange = null;
+let itemExtrasMap = {}; // { parentItemId: [extraItems] }
 
 // ═══════════════════════════════════════════════════════════════
 //  BOOT
@@ -637,6 +758,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await loadMenu();
   await loadTableStatus();
+  await loadItemExtras();
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -669,6 +791,29 @@ async function loadTableStatus() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  LOAD ITEM EXTRAS RELATIONSHIPS
+// ═══════════════════════════════════════════════════════════════
+async function loadItemExtras() {
+  try {
+    const res = await fetch(
+      CONFIG.SUPABASE_URL + '/rest/v1/menu_item_extras?select=parent_pos_id,extra_pos_id',
+      { headers: sbHeaders() }
+    );
+    const extras = await res.json();
+    
+    itemExtrasMap = {};
+    extras.forEach(ex => {
+      if (!itemExtrasMap[ex.parent_pos_id]) {
+        itemExtrasMap[ex.parent_pos_id] = [];
+      }
+      itemExtrasMap[ex.parent_pos_id].push(ex.extra_pos_id);
+    });
+  } catch(e) {
+    console.error('Failed to load item extras:', e);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  LOAD MENU FROM SUPABASE
 // ═══════════════════════════════════════════════════════════════
 async function loadMenu() {
@@ -685,11 +830,17 @@ async function loadMenu() {
     );
     const items = await itemRes.json();
 
+    // Store all items for extras lookup
+    allItems = items;
+
+    // Filter out extras from main menu display
+    const regularItems = items.filter(i => !i.is_extra);
+
     menuData = categories.map(cat => ({
       id:    cat.id,
       name:  cat.name,
       icon:  cat.icon || '🍽️',
-      items: items.filter(i => i.category_id === cat.id)
+      items: regularItems.filter(i => i.category_id === cat.id)
     })).filter(c => c.items.length > 0);
 
     renderCategoryPills();
@@ -824,7 +975,7 @@ function addToCart(e, itemId) {
   if (!item) return;
 
   if (!cart[itemId]) {
-    cart[itemId] = { item, qty: 1, note: '' };
+    cart[itemId] = { item, qty: 1, note: '', extras: [] };
   } else {
     cart[itemId].qty++;
   }
@@ -833,7 +984,7 @@ function addToCart(e, itemId) {
 }
 
 function updateCartBadge() {
-  const total = Object.values(cart).reduce((s, c) => s + c.qty, 0);
+  const total = Object.values(cart).reduce((s, c) => s + c.qty + c.extras.reduce((es, ex) => es + ex.qty, 0), 0);
   document.getElementById('cartCount').textContent = total;
 }
 
@@ -848,6 +999,92 @@ function closeCart() {
   document.getElementById('drawer').classList.remove('open');
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  EXTRAS MANAGEMENT
+// ═══════════════════════════════════════════════════════════════
+function getAvailableExtras(parentItemId) {
+  const extraIds = itemExtrasMap[parentItemId] || [];
+  return extraIds.map(id => allItems.find(i => i.pos_id === id || i.id === id)).filter(Boolean);
+}
+
+function toggleExtra(parentItemId, extraItem, checkbox) {
+  const cartItem = cart[parentItemId];
+  if (!cartItem) return;
+
+  if (checkbox.checked) {
+    // Add extra
+    const existing = cartItem.extras.find(e => e.item.id === extraItem.id);
+    if (!existing) {
+      cartItem.extras.push({ item: extraItem, qty: 1 });
+    }
+  } else {
+    // Remove extra
+    cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItem.id);
+  }
+  
+  updateCartBadge();
+  renderDrawer(); // Re-render to update totals
+}
+
+function updateExtraQty(parentItemId, extraItemId, delta) {
+  const cartItem = cart[parentItemId];
+  if (!cartItem) return;
+  
+  const extra = cartItem.extras.find(e => e.item.id === extraItemId);
+  if (!extra) return;
+  
+  extra.qty += delta;
+  if (extra.qty <= 0) {
+    cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItemId);
+  }
+  
+  updateCartBadge();
+  renderDrawer();
+}
+
+function renderExtrasSection(parentItem) {
+  const extras = getAvailableExtras(parentItem.pos_id || parentItem.id);
+  if (extras.length === 0) return '';
+  
+  let html = '<div class="extras-section">';
+  html += '<div class="extras-title">➕ Add Extras</div>';
+  
+  extras.forEach(extra => {
+    const cartItem = cart[parentItem.id];
+    const selectedExtra = cartItem ? cartItem.extras.find(e => e.item.id === extra.id) : null;
+    const isSelected = !!selectedExtra;
+    const qty = selectedExtra ? selectedExtra.qty : 0;
+    
+    html += `
+      <div class="extra-option ${isSelected ? 'selected' : ''}" onclick="toggleExtra(${parentItem.id}, ${JSON.stringify(extra).replace(/"/g, '&quot;')}, this.querySelector('input'))">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" class="extra-checkbox" ${isSelected ? 'checked' : ''} 
+                 onclick="event.stopPropagation(); toggleExtra(${parentItem.id}, ${JSON.stringify(extra).replace(/"/g, '&quot;')}, this)">
+          <span class="extra-option-name">${escHtml(extra.name)}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="extra-option-price">+$${parseFloat(extra.price_usd).toFixed(2)}</span>
+          ${isSelected ? `
+            <div class="qty-controls" style="gap:6px;">
+              <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;" 
+                      onclick="event.stopPropagation(); updateExtraQty(${parentItem.id}, ${extra.id}, -1)">−</button>
+              <span class="qty-num" style="font-size:.85rem;">${qty}</span>
+              <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;" 
+                      onclick="event.stopPropagation(); updateExtraQty(${parentItem.id}, ${extra.id}, 1)">+</button>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div>';
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DRAWER / CART RENDERING
+// ═══════════════════════════════════════════════════════════════
 function renderDrawer() {
   const body  = document.getElementById('drawerBody');
   const items = Object.values(cart);
@@ -864,21 +1101,31 @@ function renderDrawer() {
   let total = 0;
 
   items.forEach(entry => {
-    const { item, qty, note } = entry;
-    total += item.price_usd * qty;
+    const { item, qty, note, extras } = entry;
+    const itemTotal = item.price_usd * qty;
+    const extrasTotal = extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0);
+    const lineTotal = itemTotal + extrasTotal;
+    total += lineTotal;
 
     const div = document.createElement('div');
     div.className = 'cart-item';
     div.innerHTML =
       '<div class="cart-item-info">' +
         '<div class="cart-item-name">' + escHtml(item.name) + '</div>' +
-        '<div class="cart-item-price">$' + (item.price_usd * qty).toFixed(2) +
-          (qty > 1 ? ' <span style="color:#aaa;font-size:.75rem">×' + qty + '</span>' : '') +
+        '<div class="cart-item-price">$' + lineTotal.toFixed(2) +
+          (qty > 1 || extras.length > 0 ? ' <span style="color:#aaa;font-size:.75rem">(' + 
+            (qty > 1 ? '×' + qty : '') + 
+            (extras.length > 0 ? (qty > 1 ? ' + ' : '') + extras.length + ' extra' + (extras.length > 1 ? 's' : '') : '') +
+            ')</span>' : '') +
         '</div>' +
+        (extras.length > 0 ? '<div style="font-size:.75rem;color:var(--muted);margin-top:2px;">' +
+          extras.map(ex => '• ' + escHtml(ex.item.name) + (ex.qty > 1 ? ' ×' + ex.qty : '')).join('<br>') +
+        '</div>' : '') +
         '<textarea class="note-input" rows="1" placeholder="Note for this item (optional)"' +
           ' onchange="updateItemNote(' + item.id + ', this.value)"' +
           ' oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\'">' +
           escHtml(note) + '</textarea>' +
+        renderExtrasSection(item) +
       '</div>' +
       '<div class="qty-controls">' +
         '<button class="qty-btn" onclick="changeQty(' + item.id + ',-1)">−</button>' +
@@ -1001,9 +1248,15 @@ async function submitOrder() {
       item_name:  e.item.name,
       price_usd:  e.item.price_usd,
       quantity:   e.qty,
-      note:       e.note || null
+      note:       e.note || null,
+      extras:     e.extras.map(ex => ({
+        item_id: ex.item.id,
+        item_name: ex.item.name,
+        price_usd: ex.item.price_usd,
+        quantity: ex.qty
+      }))
     })),
-    total_usd: items.reduce((s, e) => s + e.item.price_usd * e.qty, 0),
+    total_usd: items.reduce((s, e) => s + (e.item.price_usd * e.qty) + e.extras.reduce((es, ex) => es + (ex.item.price_usd * ex.qty), 0), 0),
     created_at: new Date().toISOString(),
     expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
   };
@@ -1025,12 +1278,20 @@ async function submitOrder() {
 
     closeCart();
     const successItems = document.getElementById('successItems');
-    successItems.innerHTML = items.map(e =>
-      '<li>' + escHtml(e.item.name) + ' ×' + e.qty +
-      (e.note ? ' <span style="color:#888;font-size:.78rem">— ' + escHtml(e.note) + '</span>' : '') +
-      ' <span style="float:right;font-weight:700;color:#1b5e20">$' +
-        (e.item.price_usd * e.qty).toFixed(2) + '</span></li>'
-    ).join('');
+    successItems.innerHTML = items.map(e => {
+      let html = '<li>' + escHtml(e.item.name) + ' ×' + e.qty;
+      if (e.note) html += ' <span style="color:#888;font-size:.78rem">— ' + escHtml(e.note) + '</span>';
+      if (e.extras.length > 0) {
+        html += '<div style="margin-left:12px;font-size:.78rem;color:#666;">';
+        e.extras.forEach(ex => {
+          html += '+ ' + escHtml(ex.item.name) + (ex.qty > 1 ? ' ×' + ex.qty : '') + '<br>';
+        });
+        html += '</div>';
+      }
+      html += ' <span style="float:right;font-weight:700;color:#1b5e20">$' +
+        ((e.item.price_usd * e.qty) + e.extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0)).toFixed(2) + '</span></li>';
+      return html;
+    }).join('');
 
     document.getElementById('successScreen').classList.add('show');
 
@@ -1058,6 +1319,68 @@ async function submitOrder() {
     btn.classList.remove('loading');
     btn.textContent = 'Send Order to Cashier 🍽️';
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  WHATSAPP ORDER
+// ═══════════════════════════════════════════════════════════════
+function orderByWhatsApp() {
+  const name = document.getElementById('customerName').value.trim();
+  const items = Object.values(cart);
+  const orderNote = document.getElementById('orderNote').value.trim();
+
+  if (!name) {
+    alert('Please enter your name first.');
+    document.getElementById('customerName').focus();
+    return;
+  }
+  if (items.length === 0) {
+    alert('Your cart is empty! Add some items first.');
+    return;
+  }
+
+  // Build WhatsApp message
+  let message = `*New Order from ${CONFIG.STORE_NAME}* 📱\n\n`;
+  message += `*Customer:* ${name}\n`;
+  message += `*Table:* ${tableNum || 'Walk-in'}\n`;
+  message += `─`.repeat(30) + '\n\n';
+
+  let total = 0;
+  items.forEach((e, idx) => {
+    const itemTotal = e.item.price_usd * e.qty;
+    const extrasTotal = e.extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0);
+    const lineTotal = itemTotal + extrasTotal;
+    total += lineTotal;
+
+    message += `*${idx + 1}. ${e.item.name}* ×${e.qty}\n`;
+    message += `   $${itemTotal.toFixed(2)}\n`;
+    
+    if (e.note) {
+      message += `   _Note: ${e.note}_\n`;
+    }
+    
+    if (e.extras.length > 0) {
+      e.extras.forEach(ex => {
+        message += `   ➕ ${ex.item.name} ×${ex.qty} — $${(ex.item.price_usd * ex.qty).toFixed(2)}\n`;
+      });
+    }
+    
+    message += '\n';
+  });
+
+  if (orderNote) {
+    message += `*Order Note:* ${orderNote}\n\n`;
+  }
+
+  message += `─`.repeat(30) + '\n';
+  message += `*TOTAL: $${total.toFixed(2)}*\n\n`;
+  message += `_Sent via ${CONFIG.STORE_NAME} Online Menu_`;
+
+  // Encode and open WhatsApp
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappUrl = `https://wa.me/${CONFIG.PHONE_NUMBER.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
+  
+  window.open(whatsappUrl, '_blank');
 }
 
 // ═══════════════════════════════════════════════════════════════
