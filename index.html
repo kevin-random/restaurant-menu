@@ -715,27 +715,27 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  CONFIG — YOU MUST FILL THESE IN
+//  CONFIG — Only Supabase credentials here, rest comes from DB
 // ═══════════════════════════════════════════════════════════════
 const CONFIG = {
-  SUPABASE_URL:    'https://czwfskjedvmkmbhgugbp.supabase.co',
-  SUPABASE_ANON:   'sb_publishable_S-U75D86AhZb2bpteSrzAA_W0g4xUcX',
-  STORE_NAME:      'POS-HUB',
-  SECRET_TOKEN:    'MYREST2024',
-  PHONE_NUMBER:    '+9613123456', // ← Restaurant WhatsApp number (with country code)
+  SUPABASE_URL:    'https://your-project.supabase.co',  // ← YOUR SUPABASE URL
+  SUPABASE_ANON:   'your-anon-key',                      // ← YOUR ANON KEY
+  SECRET_TOKEN:    'MYREST2024',                         // ← YOUR QR TOKEN
+  // PHONE_NUMBER, STORE_NAME loaded from Supabase public_settings!
 };
 
 // ═══════════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════════
 let menuData  = [];
-let allItems  = []; // Flat list of all items including extras
-let cart      = {}; // { itemId: { item, qty, note, extras: [{extraItem, qty}] } }
+let allItems  = [];
+let cart      = {};
 let tableNum  = '';
 let tableId   = 0;
 let availableTables = [];
 let pendingTableChange = null;
-let itemExtrasMap = {}; // { parentItemId: [extraItems] }
+let itemExtrasMap = {};
+let restaurantSettings = {};
 
 // ═══════════════════════════════════════════════════════════════
 //  BOOT
@@ -751,15 +751,54 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  document.getElementById('storeName').textContent = '🍽️ ' + CONFIG.STORE_NAME;
+  // Load settings from Supabase FIRST
+  await loadRestaurantSettings();
+  
+  // Update UI with fetched settings
+  document.getElementById('storeName').textContent = '🍽️ ' + (restaurantSettings.restaurant_name || 'Restaurant');
   document.getElementById('tableBadge').textContent =
     tableNum ? 'Table ' + tableNum : 'Walk-in';
-  document.title = CONFIG.STORE_NAME + ' — Order';
+  document.title = (restaurantSettings.restaurant_name || 'Restaurant') + ' — Order';
 
   await loadMenu();
   await loadTableStatus();
   await loadItemExtras();
 });
+
+// ═══════════════════════════════════════════════════════════════
+//  LOAD RESTAURANT SETTINGS FROM SUPABASE
+// ═══════════════════════════════════════════════════════════════
+async function loadRestaurantSettings() {
+  try {
+    const res = await fetch(
+      CONFIG.SUPABASE_URL + '/rest/v1/public_settings',
+      { headers: sbHeaders() }
+    );
+    const settings = await res.json();
+    
+    settings.forEach(s => {
+      restaurantSettings[s.key] = s.value;
+    });
+    
+    // Set CONFIG from fetched settings
+    CONFIG.PHONE_NUMBER = restaurantSettings.restaurant_phone || '';
+    CONFIG.STORE_NAME = restaurantSettings.restaurant_name || 'Restaurant';
+    
+    console.log('Loaded settings:', restaurantSettings);
+  } catch(e) {
+    console.error('Failed to load settings:', e);
+    CONFIG.PHONE_NUMBER = '';
+    CONFIG.STORE_NAME = 'Restaurant';
+  }
+}
+
+function sbHeaders() {
+  return {
+    'apikey': CONFIG.SUPABASE_ANON,
+    'Authorization': 'Bearer ' + CONFIG.SUPABASE_ANON,
+    'Content-Type': 'application/json'
+  };
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  LOAD TABLE STATUS
@@ -830,10 +869,7 @@ async function loadMenu() {
     );
     const items = await itemRes.json();
 
-    // Store all items for extras lookup
     allItems = items;
-
-    // Filter out extras from main menu display
     const regularItems = items.filter(i => !i.is_extra);
 
     menuData = categories.map(cat => ({
@@ -851,14 +887,6 @@ async function loadMenu() {
       '<div style="font-size:3rem">😕</div>'+
       '<p style="margin-top:12px">Could not load menu. Please try again.</p></div>';
   }
-}
-
-function sbHeaders() {
-  return {
-    'apikey': CONFIG.SUPABASE_ANON,
-    'Authorization': 'Bearer ' + CONFIG.SUPABASE_ANON,
-    'Content-Type': 'application/json'
-  };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -886,7 +914,6 @@ function scrollToSection(id, pill) {
   document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
   pill.classList.add('active');
   if (id === 'all') {
-    document.getElementById('app').scrollTo({ top: 0, behavior: 'smooth' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
     const el = document.getElementById('section-' + id.replace('cat-',''));
@@ -1012,18 +1039,16 @@ function toggleExtra(parentItemId, extraItem, checkbox) {
   if (!cartItem) return;
 
   if (checkbox.checked) {
-    // Add extra
     const existing = cartItem.extras.find(e => e.item.id === extraItem.id);
     if (!existing) {
       cartItem.extras.push({ item: extraItem, qty: 1 });
     }
   } else {
-    // Remove extra
     cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItem.id);
   }
   
   updateCartBadge();
-  renderDrawer(); // Re-render to update totals
+  renderDrawer();
 }
 
 function updateExtraQty(parentItemId, extraItemId, delta) {
@@ -1300,7 +1325,6 @@ async function submitOrder() {
     renderMenu();
     document.getElementById('orderNote').value = '';
 
-    // Countdown
     let sec = 10;
     const cd = setInterval(() => {
       sec--;
@@ -1322,7 +1346,7 @@ async function submitOrder() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  WHATSAPP ORDER
+//  WHATSAPP ORDER FUNCTION
 // ═══════════════════════════════════════════════════════════════
 function orderByWhatsApp() {
   const name = document.getElementById('customerName').value.trim();
@@ -1336,6 +1360,12 @@ function orderByWhatsApp() {
   }
   if (items.length === 0) {
     alert('Your cart is empty! Add some items first.');
+    return;
+  }
+  
+  // Check if phone number is configured
+  if (!CONFIG.PHONE_NUMBER) {
+    alert('WhatsApp ordering is not configured. Please use the "Order" button instead.');
     return;
   }
 
@@ -1378,7 +1408,8 @@ function orderByWhatsApp() {
 
   // Encode and open WhatsApp
   const encodedMessage = encodeURIComponent(message);
-  const whatsappUrl = `https://wa.me/${CONFIG.PHONE_NUMBER.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
+  const cleanPhone = CONFIG.PHONE_NUMBER.replace(/[^0-9]/g, '');
+  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
   
   window.open(whatsappUrl, '_blank');
 }
