@@ -65,14 +65,8 @@
     padding: 8px 16px; border-radius: 20px;
     white-space: nowrap;
   }
-  
-  /* ── ORDER BUTTONS (Prominent) ─────────────────── */
-  .order-buttons {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  
+
+  /* ── SINGLE HEADER ORDER BUTTON ─────────────────── */
   .order-btn {
     background: linear-gradient(135deg, var(--gold), var(--gold2));
     border: none; border-radius: 30px;
@@ -91,7 +85,6 @@
     box-shadow: 0 6px 20px rgba(212, 168, 83, 0.5);
   }
   .order-btn:active { transform: scale(.96) translateY(0); }
-  
   .order-btn .badge {
     background: var(--navy);
     color: var(--gold2);
@@ -100,23 +93,6 @@
     font-size: .85rem; font-weight: 800;
     padding: 0 6px;
   }
-
-  .whatsapp-btn {
-    background: linear-gradient(135deg, var(--whatsapp), var(--whatsapp-dark));
-    border: none; border-radius: 30px;
-    padding: 14px 24px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700; font-size: 1rem;
-    color: #fff; cursor: pointer;
-    display: flex; align-items: center; gap: 8px;
-    transition: all .2s ease;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-  }
-  .whatsapp-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-  }
-  .whatsapp-btn:active { transform: scale(.96) translateY(0); }
 
   /* ── CATEGORY PILLS ──────────────────────────────── */
   .cat-scroll {
@@ -199,9 +175,7 @@
     position: relative;
     border: 2px solid transparent;
   }
-  .item-card.in-cart {
-    border-color: var(--gold);
-  }
+  .item-card.in-cart { border-color: var(--gold); }
   .item-card:active { transform: scale(.97); }
   .item-img {
     width: 100%; height: 120px;
@@ -264,7 +238,7 @@
     position: fixed; bottom: 0; left: 0; right: 0;
     background: var(--card);
     border-radius: 22px 22px 0 0;
-    z-index: 201; max-height: 85vh;
+    z-index: 201; max-height: 90vh;
     display: flex; flex-direction: column;
     transform: translateY(100%);
     transition: transform .3s cubic-bezier(.4,0,.2,1);
@@ -303,7 +277,7 @@
   .cart-item-info { flex: 1; }
   .cart-item-name { font-weight: 700; font-size: .92rem; margin-bottom: 3px; }
   .cart-item-price { color: var(--green); font-weight: 700; font-size: .85rem; }
-  
+
   /* ── EXTRAS SECTION IN CART ─────────────────────── */
   .extras-section {
     margin-top: 10px;
@@ -332,28 +306,15 @@
     transition: all .15s;
     border: 2px solid transparent;
   }
-  .extra-option:hover {
-    border-color: var(--gold);
-  }
+  .extra-option:hover { border-color: var(--gold); }
   .extra-option.selected {
     border-color: var(--gold);
-    background: var(--gold2);
+    background: #fff9ee;
   }
-  .extra-option-name {
-    font-size: .85rem;
-    font-weight: 600;
-  }
-  .extra-option-price {
-    font-size: .8rem;
-    color: var(--green);
-    font-weight: 700;
-  }
-  .extra-checkbox {
-    width: 20px;
-    height: 20px;
-    accent-color: var(--gold);
-  }
-  
+  .extra-option-name { font-size: .85rem; font-weight: 600; }
+  .extra-option-price { font-size: .8rem; color: var(--green); font-weight: 700; }
+  .extra-checkbox { width: 20px; height: 20px; accent-color: var(--gold); }
+
   .note-input {
     width: 100%; margin-top: 6px;
     border: 1.5px solid #e0e4f0; border-radius: 8px;
@@ -378,8 +339,10 @@
     font-weight: 800; font-size: .95rem;
     min-width: 20px; text-align: center;
   }
+
+  /* ── DRAWER FOOTER ───────────────────────────────── */
   .drawer-footer {
-    padding: 14px 20px 24px;
+    padding: 14px 20px 28px;
     border-top: 1.5px solid #f0f2f8;
   }
   .total-row {
@@ -408,23 +371,47 @@
   }
   .order-note-input:focus { border-color: var(--gold); }
 
+  /* ── TWO ACTION BUTTONS IN FOOTER ───────────────── */
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
   .submit-btn {
-    width: 100%; padding: 15px;
+    flex: 1;
+    padding: 15px 10px;
     background: var(--navy);
     color: #fff; border: none; border-radius: 14px;
     font-family: 'DM Sans', sans-serif;
-    font-weight: 700; font-size: 1.05rem;
-    cursor: pointer; letter-spacing: .3px;
+    font-weight: 700; font-size: .95rem;
+    cursor: pointer; letter-spacing: .2px;
     transition: background .2s, transform .15s;
-    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
   }
   .submit-btn:active { transform: scale(.98); }
   .submit-btn:disabled {
     background: #b0b7cc; cursor: not-allowed; transform: none;
   }
-  .submit-btn.loading::after {
-    content: ' ⏳';
+  .submit-btn.loading::after { content: ' ⏳'; }
+
+  .whatsapp-submit-btn {
+    flex: 1;
+    padding: 15px 10px;
+    background: linear-gradient(135deg, var(--whatsapp), var(--whatsapp-dark));
+    color: #fff; border: none; border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: .95rem;
+    cursor: pointer; letter-spacing: .2px;
+    transition: all .2s, transform .15s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);
   }
+  .whatsapp-submit-btn:hover {
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+    transform: translateY(-1px);
+  }
+  .whatsapp-submit-btn:active { transform: scale(.98); }
 
   /* ── SUCCESS SCREEN ──────────────────────────────── */
   .success-screen {
@@ -470,26 +457,16 @@
     gap: 14px;
     box-shadow: 0 4px 20px rgba(26,31,54,.2);
   }
-  .ready-time-banner .clock-icon {
-    font-size: 2.2rem;
-    flex-shrink: 0;
-  }
-  .ready-time-banner .ready-text {
-    text-align: left;
-  }
+  .ready-time-banner .clock-icon { font-size: 2.2rem; flex-shrink: 0; }
+  .ready-time-banner .ready-text { text-align: left; }
   .ready-time-banner .ready-label {
-    font-size: .75rem;
-    font-weight: 600;
+    font-size: .75rem; font-weight: 600;
     color: rgba(240,201,110,.7);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    margin-bottom: 3px;
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px;
   }
   .ready-time-banner .ready-time {
     font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--gold2);
+    font-size: 1.3rem; font-weight: 700; color: var(--gold2);
   }
 
   /* ── WIFI ERROR ───────────────────────────────────── */
@@ -532,81 +509,39 @@
   }
   .modal-content h3 {
     font-family: 'Playfair Display', serif;
-    margin-bottom: 12px;
-    color: var(--navy);
+    margin-bottom: 12px; color: var(--navy);
   }
-  .modal-content p {
-    color: var(--muted);
-    margin-bottom: 16px;
-    font-size: .9rem;
-  }
+  .modal-content p { color: var(--muted); margin-bottom: 16px; font-size: .9rem; }
   .table-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    margin-bottom: 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 200px; overflow-y: auto; margin-bottom: 16px;
   }
   .table-option {
-    padding: 12px;
-    border: 2px solid #e0e4f0;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all .2s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 12px; border: 2px solid #e0e4f0;
+    border-radius: 10px; cursor: pointer; transition: all .2s;
+    display: flex; justify-content: space-between; align-items: center;
   }
   .table-option:hover, .table-option.selected {
-    border-color: var(--gold);
-    background: var(--cream);
+    border-color: var(--gold); background: var(--cream);
   }
-  .table-option.occupied {
-    opacity: .6;
-    cursor: not-allowed;
-  }
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-  }
+  .table-option.occupied { opacity: .6; cursor: not-allowed; }
+  .modal-actions { display: flex; gap: 10px; }
   .modal-btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all .2s;
+    flex: 1; padding: 12px; border: none;
+    border-radius: 10px; font-weight: 700; cursor: pointer; transition: all .2s;
   }
-  .modal-btn.primary {
-    background: var(--navy);
-    color: #fff;
-  }
-  .modal-btn.secondary {
-    background: #f0f2f8;
-    color: var(--navy);
-  }
+  .modal-btn.primary { background: var(--navy); color: #fff; }
+  .modal-btn.secondary { background: #f0f2f8; color: var(--navy); }
 
   @media (min-width: 480px) {
     .items-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
     .order-btn { padding: 16px 32px; font-size: 1.2rem; }
-    .whatsapp-btn { padding: 16px 28px; font-size: 1.1rem; }
   }
-  
+
   @media (max-width: 400px) {
-    .header-top {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .order-buttons {
-      width: 100%;
-      justify-content: stretch;
-    }
-    .order-btn, .whatsapp-btn {
-      flex: 1;
-      justify-content: center;
-    }
+    .header-top { flex-direction: column; align-items: flex-start; }
+    .action-buttons { flex-direction: column; }
+    .submit-btn, .whatsapp-submit-btn { width: 100%; }
   }
 </style>
 </head>
@@ -639,8 +574,6 @@
   <h2>Order Sent!</h2>
   <p>Your request has been sent to the cashier.<br>A staff member will assist you shortly.</p>
   <ul class="success-items" id="successItems"></ul>
-
-  <!-- ── READY TIME BANNER ── -->
   <div class="ready-time-banner">
     <div class="clock-icon">⏱️</div>
     <div class="ready-text">
@@ -648,7 +581,6 @@
       <div class="ready-time">15 – 25 minutes</div>
     </div>
   </div>
-
   <p style="color:var(--muted);font-size:.85rem;margin-top:4px">
     This screen will close in <span id="successCountdown">10</span>s
   </p>
@@ -663,14 +595,10 @@
       <span class="store-name" id="storeName">🍽️ Restaurant</span>
       <div class="header-right">
         <span class="table-badge" id="tableBadge">Table —</span>
-        <div class="order-buttons">
-          <button class="order-btn" onclick="openCart()">
-            🛒 Order <span class="badge" id="cartCount">0</span>
-          </button>
-          <button class="whatsapp-btn" onclick="orderByWhatsApp()">
-            💬 WhatsApp
-          </button>
-        </div>
+        <!-- Single cart button — WhatsApp is now INSIDE the drawer -->
+        <button class="order-btn" onclick="openCart()">
+          🛒 Order <span class="badge" id="cartCount">0</span>
+        </button>
       </div>
     </div>
     <div class="cat-scroll" id="catScroll"></div>
@@ -707,34 +635,52 @@
       <span class="total-label">Total</span>
       <span class="total-val" id="drawerTotal">$0.00</span>
     </div>
-    <button class="submit-btn" id="submitBtn" onclick="submitOrder()">
-      Send Order to Cashier 🍽️
-    </button>
+    <!-- TWO BUTTONS: POS order + WhatsApp -->
+    <div class="action-buttons">
+      <button class="submit-btn" id="submitBtn" onclick="submitOrder()">
+        🍽️ Order via App
+      </button>
+      <button class="whatsapp-submit-btn" id="whatsappBtn" onclick="orderByWhatsApp()">
+        💬 WhatsApp
+      </button>
+    </div>
   </div>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  CONFIG — Only Supabase credentials here, rest comes from DB
+//  CONFIG — fill in your Supabase credentials
 // ═══════════════════════════════════════════════════════════════
 const CONFIG = {
-  SUPABASE_URL:    'https://your-project.supabase.co',  // ← YOUR SUPABASE URL
-  SUPABASE_ANON:   'your-anon-key',                      // ← YOUR ANON KEY
-  SECRET_TOKEN:    'MYREST2024',                         // ← YOUR QR TOKEN
-  // PHONE_NUMBER, STORE_NAME loaded from Supabase public_settings!
+  SUPABASE_URL:  'https://your-project.supabase.co',  // ← YOUR SUPABASE URL
+  SUPABASE_ANON: 'your-anon-key',                      // ← YOUR ANON KEY
+  SECRET_TOKEN:  'MYREST2024',                         // ← YOUR QR TOKEN
+  PHONE_NUMBER:  '',   // loaded from Supabase public_settings at runtime
+  STORE_NAME:    'Restaurant',
 };
+
+// ═══════════════════════════════════════════════════════════════
+//  HEADERS HELPER  — was missing before, caused all fetch errors
+// ═══════════════════════════════════════════════════════════════
+function sbHeaders() {
+  return {
+    'apikey':        CONFIG.SUPABASE_ANON,
+    'Authorization': 'Bearer ' + CONFIG.SUPABASE_ANON,
+    'Content-Type':  'application/json',
+  };
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════════
-let menuData  = [];
-let allItems  = [];
-let cart      = {};
-let tableNum  = '';
-let tableId   = 0;
-let availableTables = [];
+let menuData         = [];
+let allItems         = [];
+let cart             = {};
+let tableNum         = '';
+let tableId          = 0;
+let availableTables  = [];
 let pendingTableChange = null;
-let itemExtrasMap = {};
+let itemExtrasMap    = {};   // parentPosId → [ extraItem, ... ]
 let restaurantSettings = {};
 
 // ═══════════════════════════════════════════════════════════════
@@ -742,7 +688,7 @@ let restaurantSettings = {};
 // ═══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
-  const token  = params.get('t')   || '';
+  const token  = params.get('t')     || '';
   tableNum     = params.get('table') || '';
   tableId      = parseInt(params.get('tid') || '0');
 
@@ -751,14 +697,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Load settings from Supabase FIRST
   await loadRestaurantSettings();
-  
-  // Update UI with fetched settings
-  document.getElementById('storeName').textContent = '🍽️ ' + (restaurantSettings.restaurant_name || 'Restaurant');
+
+  document.getElementById('storeName').textContent =
+    '🍽️ ' + (CONFIG.STORE_NAME || 'Restaurant');
   document.getElementById('tableBadge').textContent =
     tableNum ? 'Table ' + tableNum : 'Walk-in';
-  document.title = (restaurantSettings.restaurant_name || 'Restaurant') + ' — Order';
+  document.title = (CONFIG.STORE_NAME || 'Restaurant') + ' — Order';
 
   await loadMenu();
   await loadTableStatus();
@@ -766,7 +711,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ═══════════════════════════════════════════════════════════════
-//  LOAD RESTAURANT SETTINGS FROM SUPABASE
+//  LOAD RESTAURANT SETTINGS FROM SUPABASE public_settings
 // ═══════════════════════════════════════════════════════════════
 async function loadRestaurantSettings() {
   try {
@@ -774,30 +719,19 @@ async function loadRestaurantSettings() {
       CONFIG.SUPABASE_URL + '/rest/v1/public_settings',
       { headers: sbHeaders() }
     );
+    if (!res.ok) return;
+
     const settings = await res.json();
-    
-    settings.forEach(s => {
-      restaurantSettings[s.key] = s.value;
-    });
-    
-    // Set CONFIG from fetched settings
+    settings.forEach(s => { restaurantSettings[s.key] = s.value; });
+
     CONFIG.PHONE_NUMBER = restaurantSettings.restaurant_phone || '';
-    CONFIG.STORE_NAME = restaurantSettings.restaurant_name || 'Restaurant';
-    
-    console.log('Loaded settings:', restaurantSettings);
+    CONFIG.STORE_NAME   = restaurantSettings.restaurant_name  || 'Restaurant';
+
+    document.getElementById('storeName').textContent = '🍽️ ' + CONFIG.STORE_NAME;
+    document.title = CONFIG.STORE_NAME + ' — Order';
   } catch(e) {
     console.error('Failed to load settings:', e);
-    CONFIG.PHONE_NUMBER = '';
-    CONFIG.STORE_NAME = 'Restaurant';
   }
-}
-
-function sbHeaders() {
-  return {
-    'apikey': CONFIG.SUPABASE_ANON,
-    'Authorization': 'Bearer ' + CONFIG.SUPABASE_ANON,
-    'Content-Type': 'application/json'
-  };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -812,16 +746,19 @@ async function loadTableStatus() {
     const tables = await res.json();
 
     const ordersRes = await fetch(
-      CONFIG.SUPABASE_URL + '/rest/v1/RestaurantOrders?select=TableID,Status&Status=eq.Open&Status=eq.Preparing&Status=eq.Bill',
+      CONFIG.SUPABASE_URL +
+        '/rest/v1/RestaurantOrders?select=TableID,Status&Status=eq.Open&Status=eq.Preparing&Status=eq.Bill',
       { headers: sbHeaders() }
     );
     const activeOrders = await ordersRes.json();
-    const occupiedTableIds = new Set(activeOrders.map(o => o.TableID).filter(id => id !== null));
+    const occupiedTableIds = new Set(
+      activeOrders.map(o => o.TableID).filter(id => id !== null)
+    );
 
     availableTables = tables.map(t => ({
-      id: t.TableID,
-      name: t.TableName,
-      occupied: occupiedTableIds.has(t.TableID),
+      id:        t.TableID,
+      name:      t.TableName,
+      occupied:  occupiedTableIds.has(t.TableID),
       isCurrent: t.TableID === tableId
     }));
   } catch(e) {
@@ -838,13 +775,13 @@ async function loadItemExtras() {
       CONFIG.SUPABASE_URL + '/rest/v1/menu_item_extras?select=parent_pos_id,extra_pos_id',
       { headers: sbHeaders() }
     );
+    if (!res.ok) return;
+
     const extras = await res.json();
-    
     itemExtrasMap = {};
     extras.forEach(ex => {
-      if (!itemExtrasMap[ex.parent_pos_id]) {
+      if (!itemExtrasMap[ex.parent_pos_id])
         itemExtrasMap[ex.parent_pos_id] = [];
-      }
       itemExtrasMap[ex.parent_pos_id].push(ex.extra_pos_id);
     });
   } catch(e) {
@@ -872,19 +809,21 @@ async function loadMenu() {
     allItems = items;
     const regularItems = items.filter(i => !i.is_extra);
 
-    menuData = categories.map(cat => ({
-      id:    cat.id,
-      name:  cat.name,
-      icon:  cat.icon || '🍽️',
-      items: regularItems.filter(i => i.category_id === cat.id)
-    })).filter(c => c.items.length > 0);
+    menuData = categories
+      .map(cat => ({
+        id:    cat.id,
+        name:  cat.name,
+        icon:  cat.icon || '🍽️',
+        items: regularItems.filter(i => i.category_id === cat.id)
+      }))
+      .filter(c => c.items.length > 0);
 
     renderCategoryPills();
     renderMenu();
   } catch(e) {
     document.getElementById('menuContent').innerHTML =
-      '<div style="text-align:center;padding:40px;color:#888">'+
-      '<div style="font-size:3rem">😕</div>'+
+      '<div style="text-align:center;padding:40px;color:#888">' +
+      '<div style="font-size:3rem">😕</div>' +
       '<p style="margin-top:12px">Could not load menu. Please try again.</p></div>';
   }
 }
@@ -916,7 +855,7 @@ function scrollToSection(id, pill) {
   if (id === 'all') {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
-    const el = document.getElementById('section-' + id.replace('cat-',''));
+    const el = document.getElementById('section-' + id.replace('cat-', ''));
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
@@ -955,7 +894,8 @@ function buildItemCard(item) {
   if (item.image_url) {
     card.innerHTML +=
       '<img class="item-img" src="' + item.image_url +
-      '" alt="' + item.name + '" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"/>'+
+      '" alt="' + item.name +
+      '" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"/>' +
       '<div class="item-img-placeholder" style="display:none">🍽️</div>';
   } else {
     card.innerHTML += '<div class="item-img-placeholder">🍽️</div>';
@@ -964,7 +904,9 @@ function buildItemCard(item) {
   card.innerHTML +=
     '<div class="item-body">' +
       '<div class="item-name">' + escHtml(item.name) + '</div>' +
-      (item.description ? '<div class="item-desc">' + escHtml(item.description) + '</div>' : '') +
+      (item.description
+        ? '<div class="item-desc">' + escHtml(item.description) + '</div>'
+        : '') +
       '<div class="item-footer">' +
         '<span class="item-price">$' + parseFloat(item.price_usd).toFixed(2) + '</span>' +
         '<span class="qty-badge">×' + (inCart ? inCart.qty : 0) + '</span>' +
@@ -973,7 +915,6 @@ function buildItemCard(item) {
     '</div>';
 
   if (inCart) card.classList.add('in-cart');
-
   return card;
 }
 
@@ -1011,7 +952,9 @@ function addToCart(e, itemId) {
 }
 
 function updateCartBadge() {
-  const total = Object.values(cart).reduce((s, c) => s + c.qty + c.extras.reduce((es, ex) => es + ex.qty, 0), 0);
+  const total = Object.values(cart).reduce(
+    (s, c) => s + c.qty + c.extras.reduce((es, ex) => es + ex.qty, 0), 0
+  );
   document.getElementById('cartCount').textContent = total;
 }
 
@@ -1030,23 +973,36 @@ function closeCart() {
 //  EXTRAS MANAGEMENT
 // ═══════════════════════════════════════════════════════════════
 function getAvailableExtras(parentItemId) {
-  const extraIds = itemExtrasMap[parentItemId] || [];
-  return extraIds.map(id => allItems.find(i => i.pos_id === id || i.id === id)).filter(Boolean);
+  // parentItemId is the Supabase id; extras map is keyed by pos_id
+  // items in allItems have both .id (supabase) and .pos_id
+  const item = allItems.find(i => i.id === parentItemId);
+  if (!item) return [];
+
+  // try matching by pos_id first, fall back to id
+  const extraPosIds = itemExtrasMap[item.pos_id] || itemExtrasMap[item.id] || [];
+  return extraPosIds
+    .map(pid => allItems.find(i => i.pos_id === pid || i.id === pid))
+    .filter(Boolean);
 }
 
-function toggleExtra(parentItemId, extraItem, checkbox) {
+function toggleExtra(parentItemId, extraItemJson, checkbox) {
   const cartItem = cart[parentItemId];
   if (!cartItem) return;
 
+  let extraItem;
+  try {
+    extraItem = typeof extraItemJson === 'string'
+      ? JSON.parse(extraItemJson)
+      : extraItemJson;
+  } catch(e) { return; }
+
   if (checkbox.checked) {
     const existing = cartItem.extras.find(e => e.item.id === extraItem.id);
-    if (!existing) {
-      cartItem.extras.push({ item: extraItem, qty: 1 });
-    }
+    if (!existing) cartItem.extras.push({ item: extraItem, qty: 1 });
   } else {
     cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItem.id);
   }
-  
+
   updateCartBadge();
   renderDrawer();
 }
@@ -1054,57 +1010,71 @@ function toggleExtra(parentItemId, extraItem, checkbox) {
 function updateExtraQty(parentItemId, extraItemId, delta) {
   const cartItem = cart[parentItemId];
   if (!cartItem) return;
-  
+
   const extra = cartItem.extras.find(e => e.item.id === extraItemId);
   if (!extra) return;
-  
+
   extra.qty += delta;
-  if (extra.qty <= 0) {
+  if (extra.qty <= 0)
     cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItemId);
-  }
-  
+
   updateCartBadge();
   renderDrawer();
 }
 
-function renderExtrasSection(parentItem) {
-  const extras = getAvailableExtras(parentItem.pos_id || parentItem.id);
+function renderExtrasSection(item) {
+  const extras = getAvailableExtras(item.id);
   if (extras.length === 0) return '';
-  
+
   let html = '<div class="extras-section">';
   html += '<div class="extras-title">➕ Add Extras</div>';
-  
+
   extras.forEach(extra => {
-    const cartItem = cart[parentItem.id];
-    const selectedExtra = cartItem ? cartItem.extras.find(e => e.item.id === extra.id) : null;
-    const isSelected = !!selectedExtra;
-    const qty = selectedExtra ? selectedExtra.qty : 0;
-    
+    const cartItem    = cart[item.id];
+    const selectedEx  = cartItem ? cartItem.extras.find(e => e.item.id === extra.id) : null;
+    const isSelected  = !!selectedEx;
+    const qty         = selectedEx ? selectedEx.qty : 0;
+
+    // Safely encode extra object for inline onclick
+    const extraJson = escAttr(JSON.stringify(extra));
+
     html += `
-      <div class="extra-option ${isSelected ? 'selected' : ''}" onclick="toggleExtra(${parentItem.id}, ${JSON.stringify(extra).replace(/"/g, '&quot;')}, this.querySelector('input'))">
+      <div class="extra-option ${isSelected ? 'selected' : ''}"
+           onclick="handleExtraClick(event, ${item.id}, '${extraJson}')">
         <div style="display:flex;align-items:center;gap:10px;">
-          <input type="checkbox" class="extra-checkbox" ${isSelected ? 'checked' : ''} 
-                 onclick="event.stopPropagation(); toggleExtra(${parentItem.id}, ${JSON.stringify(extra).replace(/"/g, '&quot;')}, this)">
+          <input type="checkbox" class="extra-checkbox" ${isSelected ? 'checked' : ''}
+                 onclick="event.stopPropagation(); handleExtraCheck(event, ${item.id}, '${extraJson}', this)">
           <span class="extra-option-name">${escHtml(extra.name)}</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <span class="extra-option-price">+$${parseFloat(extra.price_usd).toFixed(2)}</span>
           ${isSelected ? `
-            <div class="qty-controls" style="gap:6px;">
-              <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;" 
-                      onclick="event.stopPropagation(); updateExtraQty(${parentItem.id}, ${extra.id}, -1)">−</button>
+            <div class="qty-controls" style="gap:6px;" onclick="event.stopPropagation()">
+              <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;"
+                      onclick="updateExtraQty(${item.id}, ${extra.id}, -1)">−</button>
               <span class="qty-num" style="font-size:.85rem;">${qty}</span>
-              <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;" 
-                      onclick="event.stopPropagation(); updateExtraQty(${parentItem.id}, ${extra.id}, 1)">+</button>
-            </div>
-          ` : ''}
+              <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;"
+                      onclick="updateExtraQty(${item.id}, ${extra.id}, 1)">+</button>
+            </div>` : ''}
         </div>
-      </div>
-    `;
+      </div>`;
   });
-  
+
   html += '</div>';
   return html;
+}
+
+function handleExtraClick(event, parentItemId, extraJson) {
+  // Clicked the row — toggle the checkbox
+  const checkbox = event.currentTarget.querySelector('.extra-checkbox');
+  if (!checkbox || event.target === checkbox) return;
+  checkbox.checked = !checkbox.checked;
+  toggleExtra(parentItemId, extraJson, checkbox);
+}
+
+function handleExtraCheck(event, parentItemId, extraJson, checkbox) {
+  event.stopPropagation();
+  toggleExtra(parentItemId, extraJson, checkbox);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1127,9 +1097,9 @@ function renderDrawer() {
 
   items.forEach(entry => {
     const { item, qty, note, extras } = entry;
-    const itemTotal = item.price_usd * qty;
+    const itemTotal   = item.price_usd * qty;
     const extrasTotal = extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0);
-    const lineTotal = itemTotal + extrasTotal;
+    const lineTotal   = itemTotal + extrasTotal;
     total += lineTotal;
 
     const div = document.createElement('div');
@@ -1138,14 +1108,22 @@ function renderDrawer() {
       '<div class="cart-item-info">' +
         '<div class="cart-item-name">' + escHtml(item.name) + '</div>' +
         '<div class="cart-item-price">$' + lineTotal.toFixed(2) +
-          (qty > 1 || extras.length > 0 ? ' <span style="color:#aaa;font-size:.75rem">(' + 
-            (qty > 1 ? '×' + qty : '') + 
-            (extras.length > 0 ? (qty > 1 ? ' + ' : '') + extras.length + ' extra' + (extras.length > 1 ? 's' : '') : '') +
-            ')</span>' : '') +
+          (qty > 1 || extras.length > 0
+            ? ' <span style="color:#aaa;font-size:.75rem">(' +
+              (qty > 1 ? '×' + qty : '') +
+              (extras.length > 0
+                ? (qty > 1 ? ' + ' : '') + extras.length + ' extra' + (extras.length > 1 ? 's' : '')
+                : '') +
+              ')</span>'
+            : '') +
         '</div>' +
-        (extras.length > 0 ? '<div style="font-size:.75rem;color:var(--muted);margin-top:2px;">' +
-          extras.map(ex => '• ' + escHtml(ex.item.name) + (ex.qty > 1 ? ' ×' + ex.qty : '')).join('<br>') +
-        '</div>' : '') +
+        (extras.length > 0
+          ? '<div style="font-size:.75rem;color:var(--muted);margin-top:2px;">' +
+            extras.map(ex =>
+              '• ' + escHtml(ex.item.name) + (ex.qty > 1 ? ' ×' + ex.qty : '')
+            ).join('<br>') +
+            '</div>'
+          : '') +
         '<textarea class="note-input" rows="1" placeholder="Note for this item (optional)"' +
           ' onchange="updateItemNote(' + item.id + ', this.value)"' +
           ' oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\'">' +
@@ -1183,8 +1161,8 @@ function updateItemNote(itemId, val) {
 //  TABLE CONFLICT MODAL
 // ═══════════════════════════════════════════════════════════════
 function showTableConflictModal() {
-  const modal = document.getElementById('tableModal');
-  const list = document.getElementById('tableList');
+  const modal      = document.getElementById('tableModal');
+  const list       = document.getElementById('tableList');
   const confirmBtn = document.getElementById('confirmTableBtn');
 
   list.innerHTML = '';
@@ -1194,7 +1172,8 @@ function showTableConflictModal() {
   const freeTables = availableTables.filter(t => !t.occupied && !t.isCurrent);
 
   if (freeTables.length === 0) {
-    list.innerHTML = '<p style="color:var(--red);text-align:center;">No available tables. Please ask staff.</p>';
+    list.innerHTML =
+      '<p style="color:var(--red);text-align:center;">No available tables. Please ask staff.</p>';
   } else {
     freeTables.forEach(t => {
       const div = document.createElement('div');
@@ -1222,7 +1201,7 @@ function closeTableModal() {
 
 function confirmTableChange() {
   if (!pendingTableChange) return;
-  tableId = pendingTableChange.id;
+  tableId  = pendingTableChange.id;
   tableNum = pendingTableChange.name.replace('Table ', '');
   document.getElementById('tableBadge').textContent = 'Table ' + tableNum;
   closeTableModal();
@@ -1230,12 +1209,12 @@ function confirmTableChange() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SUBMIT ORDER
+//  SUBMIT ORDER → POS (sends to Supabase → polled by C# app)
 // ═══════════════════════════════════════════════════════════════
 async function submitOrder() {
-  const name = document.getElementById('customerName').value.trim();
+  const name  = document.getElementById('customerName').value.trim();
   const items = Object.values(cart);
-  const btn = document.getElementById('submitBtn');
+  const btn   = document.getElementById('submitBtn');
 
   if (btn.disabled || btn.classList.contains('loading')) return;
 
@@ -1263,25 +1242,29 @@ async function submitOrder() {
   const orderNote = document.getElementById('orderNote').value.trim();
 
   const payload = {
-    table_number:   tableNum || 'Walk-in',
-    table_id:       tableId || null,
-    customer_name:  name,
-    order_note:     orderNote || null,
-    status:         'pending',
+    table_number:  tableNum || 'Walk-in',
+    table_id:      tableId  || null,
+    customer_name: name,
+    order_note:    orderNote || null,
+    status:        'pending',
     items: items.map(e => ({
-      item_id:    e.item.id,
-      item_name:  e.item.name,
-      price_usd:  e.item.price_usd,
-      quantity:   e.qty,
-      note:       e.note || null,
-      extras:     e.extras.map(ex => ({
-        item_id: ex.item.id,
+      item_id:   e.item.id,
+      item_name: e.item.name,
+      price_usd: e.item.price_usd,
+      quantity:  e.qty,
+      note:      e.note || null,
+      extras:    e.extras.map(ex => ({
+        item_id:   ex.item.id,
         item_name: ex.item.name,
         price_usd: ex.item.price_usd,
-        quantity: ex.qty
+        quantity:  ex.qty
       }))
     })),
-    total_usd: items.reduce((s, e) => s + (e.item.price_usd * e.qty) + e.extras.reduce((es, ex) => es + (ex.item.price_usd * ex.qty), 0), 0),
+    total_usd: items.reduce(
+      (s, e) => s + (e.item.price_usd * e.qty) +
+        e.extras.reduce((es, ex) => es + (ex.item.price_usd * ex.qty), 0),
+      0
+    ),
     created_at: new Date().toISOString(),
     expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
   };
@@ -1290,111 +1273,87 @@ async function submitOrder() {
     const res = await fetch(
       CONFIG.SUPABASE_URL + '/rest/v1/online_order_requests',
       {
-        method: 'POST',
+        method:  'POST',
         headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
-        body: JSON.stringify(payload)
+        body:    JSON.stringify(payload)
       }
     );
 
     if (!res.ok) {
       const errorText = await res.text();
-      throw new Error('Server error: ' + res.status + ' - ' + errorText);
+      throw new Error('Server error: ' + res.status + ' — ' + errorText);
     }
 
     closeCart();
-    const successItems = document.getElementById('successItems');
-    successItems.innerHTML = items.map(e => {
-      let html = '<li>' + escHtml(e.item.name) + ' ×' + e.qty;
-      if (e.note) html += ' <span style="color:#888;font-size:.78rem">— ' + escHtml(e.note) + '</span>';
-      if (e.extras.length > 0) {
-        html += '<div style="margin-left:12px;font-size:.78rem;color:#666;">';
-        e.extras.forEach(ex => {
-          html += '+ ' + escHtml(ex.item.name) + (ex.qty > 1 ? ' ×' + ex.qty : '') + '<br>';
-        });
-        html += '</div>';
-      }
-      html += ' <span style="float:right;font-weight:700;color:#1b5e20">$' +
-        ((e.item.price_usd * e.qty) + e.extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0)).toFixed(2) + '</span></li>';
-      return html;
-    }).join('');
-
-    document.getElementById('successScreen').classList.add('show');
+    buildSuccessScreen(items);
+    showSuccessScreen();
 
     cart = {};
     updateCartBadge();
     renderMenu();
     document.getElementById('orderNote').value = '';
 
-    let sec = 10;
-    const cd = setInterval(() => {
-      sec--;
-      document.getElementById('successCountdown').textContent = sec;
-      if (sec <= 0) {
-        clearInterval(cd);
-        document.getElementById('successScreen').classList.remove('show');
-        document.getElementById('customerName').value = '';
-      }
-    }, 1000);
-
   } catch(e) {
     alert('Could not send order: ' + e.message);
   } finally {
     btn.disabled = false;
     btn.classList.remove('loading');
-    btn.textContent = 'Send Order to Cashier 🍽️';
+    btn.textContent = '🍽️ Order via App';
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  WHATSAPP ORDER FUNCTION
+//  WHATSAPP ORDER — uses full cart WITH extras, inside drawer
 // ═══════════════════════════════════════════════════════════════
 function orderByWhatsApp() {
-  const name = document.getElementById('customerName').value.trim();
-  const items = Object.values(cart);
+  const name      = document.getElementById('customerName').value.trim();
+  const items     = Object.values(cart);
   const orderNote = document.getElementById('orderNote').value.trim();
 
   if (!name) {
     alert('Please enter your name first.');
     document.getElementById('customerName').focus();
+    closeCart();
     return;
   }
   if (items.length === 0) {
     alert('Your cart is empty! Add some items first.');
     return;
   }
-  
-  // Check if phone number is configured
   if (!CONFIG.PHONE_NUMBER) {
-    alert('WhatsApp ordering is not configured. Please use the "Order" button instead.');
+    alert('WhatsApp ordering is not configured yet.\nPlease ask a staff member for assistance.');
     return;
   }
 
-  // Build WhatsApp message
-  let message = `*New Order from ${CONFIG.STORE_NAME}* 📱\n\n`;
+  // Build a rich WhatsApp message including extras
+  let message = `*New Order — ${CONFIG.STORE_NAME}* 📱\n\n`;
   message += `*Customer:* ${name}\n`;
   message += `*Table:* ${tableNum || 'Walk-in'}\n`;
-  message += `─`.repeat(30) + '\n\n';
+  message += `${'─'.repeat(28)}\n\n`;
 
   let total = 0;
   items.forEach((e, idx) => {
-    const itemTotal = e.item.price_usd * e.qty;
+    const itemTotal   = e.item.price_usd * e.qty;
     const extrasTotal = e.extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0);
-    const lineTotal = itemTotal + extrasTotal;
+    const lineTotal   = itemTotal + extrasTotal;
     total += lineTotal;
 
-    message += `*${idx + 1}. ${e.item.name}* ×${e.qty}\n`;
-    message += `   $${itemTotal.toFixed(2)}\n`;
-    
+    message += `*${idx + 1}. ${e.item.name}* ×${e.qty}`;
+    message += `   — $${itemTotal.toFixed(2)}\n`;
+
     if (e.note) {
       message += `   _Note: ${e.note}_\n`;
     }
-    
+
     if (e.extras.length > 0) {
       e.extras.forEach(ex => {
-        message += `   ➕ ${ex.item.name} ×${ex.qty} — $${(ex.item.price_usd * ex.qty).toFixed(2)}\n`;
+        const exTotal = ex.item.price_usd * ex.qty;
+        message += `   ➕ ${ex.item.name}`;
+        if (ex.qty > 1) message += ` ×${ex.qty}`;
+        message += ` — $${exTotal.toFixed(2)}\n`;
       });
     }
-    
+
     message += '\n';
   });
 
@@ -1402,16 +1361,52 @@ function orderByWhatsApp() {
     message += `*Order Note:* ${orderNote}\n\n`;
   }
 
-  message += `─`.repeat(30) + '\n';
+  message += `${'─'.repeat(28)}\n`;
   message += `*TOTAL: $${total.toFixed(2)}*\n\n`;
   message += `_Sent via ${CONFIG.STORE_NAME} Online Menu_`;
 
-  // Encode and open WhatsApp
-  const encodedMessage = encodeURIComponent(message);
-  const cleanPhone = CONFIG.PHONE_NUMBER.replace(/[^0-9]/g, '');
-  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
-  
+  const cleanPhone    = CONFIG.PHONE_NUMBER.replace(/[^0-9]/g, '');
+  const encodedMsg    = encodeURIComponent(message);
+  const whatsappUrl   = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
   window.open(whatsappUrl, '_blank');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SUCCESS SCREEN HELPERS
+// ═══════════════════════════════════════════════════════════════
+function buildSuccessScreen(items) {
+  const ul = document.getElementById('successItems');
+  ul.innerHTML = items.map(e => {
+    let html = '<li>' + escHtml(e.item.name) + ' ×' + e.qty;
+    if (e.note)
+      html += ' <span style="color:#888;font-size:.78rem">— ' + escHtml(e.note) + '</span>';
+    if (e.extras.length > 0) {
+      html += '<div style="margin-left:12px;font-size:.78rem;color:#666;">';
+      e.extras.forEach(ex => {
+        html += '+ ' + escHtml(ex.item.name) + (ex.qty > 1 ? ' ×' + ex.qty : '') + '<br>';
+      });
+      html += '</div>';
+    }
+    const lineTotal = (e.item.price_usd * e.qty) +
+      e.extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0);
+    html += ' <span style="float:right;font-weight:700;color:#1b5e20">$' +
+      lineTotal.toFixed(2) + '</span></li>';
+    return html;
+  }).join('');
+}
+
+function showSuccessScreen() {
+  document.getElementById('successScreen').classList.add('show');
+  let sec = 10;
+  const cd = setInterval(() => {
+    sec--;
+    document.getElementById('successCountdown').textContent = sec;
+    if (sec <= 0) {
+      clearInterval(cd);
+      document.getElementById('successScreen').classList.remove('show');
+      document.getElementById('customerName').value = '';
+    }
+  }, 1000);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1419,8 +1414,18 @@ function orderByWhatsApp() {
 // ═══════════════════════════════════════════════════════════════
 function escHtml(str) {
   return String(str)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Escapes a string for use inside an HTML attribute (single-quoted)
+function escAttr(str) {
+  return String(str)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '&quot;');
 }
 </script>
 </body>
