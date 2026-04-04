@@ -8,610 +8,265 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --navy:   #1a1f36;
-    --navy2:  #252b45;
-    --gold:   #d4a853;
-    --gold2:  #f0c96e;
-    --cream:  #faf7f2;
-    --card:   #ffffff;
-    --muted:  #8a90a8;
-    --green:  #1b5e20;
-    --greenL: #e8f5e9;
-    --red:    #c62828;
-    --redL:   #ffebee;
-    --radius: 16px;
-    --shadow: 0 4px 24px rgba(26,31,54,.10);
-    --whatsapp: #25d366;
-    --whatsapp-dark: #128c7e;
+    --navy:#1a1f36; --navy2:#252b45; --gold:#d4a853; --gold2:#f0c96e;
+    --cream:#faf7f2; --card:#ffffff; --muted:#8a90a8;
+    --green:#1b5e20; --red:#c62828; --radius:16px;
+    --shadow:0 4px 24px rgba(26,31,54,.10);
+    --whatsapp:#25d366; --whatsapp-dark:#128c7e;
+    --purple:#6a1b9a; --purple2:#9c27b0;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);min-height:100vh;}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--navy);
-    min-height: 100vh;
-  }
+  /* LOGIN */
+  .login-screen{display:none;position:fixed;inset:0;background:var(--navy);z-index:1000;flex-direction:column;align-items:center;justify-content:center;padding:32px;}
+  .login-screen.show{display:flex;}
+  .login-box{background:var(--navy2);border-radius:20px;padding:36px 28px;width:100%;max-width:380px;box-shadow:0 8px 40px rgba(0,0,0,.4);border:1px solid rgba(212,168,83,.2);}
+  .login-logo{font-family:'Playfair Display',serif;color:var(--gold2);font-size:1.5rem;font-weight:700;text-align:center;margin-bottom:4px;}
+  .login-subtitle{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:28px;}
+  .login-field{margin-bottom:16px;}
+  .login-field label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+  .login-field input{width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:.95rem;color:#fff;outline:none;transition:border-color .2s;}
+  .login-field input:focus{border-color:var(--gold);}
+  .login-field input::placeholder{color:rgba(255,255,255,.3);}
+  .login-err{background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.4);border-radius:8px;padding:10px 14px;font-size:.85rem;color:#ff7070;margin-bottom:16px;display:none;}
+  .login-err.show{display:block;}
+  .login-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:12px;padding:14px;font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;color:var(--navy);cursor:pointer;transition:all .2s;margin-top:4px;}
+  .login-btn:hover{opacity:.9;transform:translateY(-1px);}
+  .login-btn:active{transform:scale(.98);}
+  .login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+  .guest-link{text-align:center;margin-top:18px;font-size:.83rem;color:var(--muted);}
+  .guest-link a{color:var(--gold2);cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
 
-  /* ── HEADER ─────────────────────────────────────── */
-  .header {
-    background: var(--navy);
-    padding: 20px 20px 16px;
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,.25);
-  }
-  .header-top {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .store-name {
-    font-family: 'Playfair Display', serif;
-    color: var(--gold2);
-    font-size: 1.45rem; font-weight: 700;
-    letter-spacing: .5px;
-  }
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .table-badge {
-    background: var(--gold);
-    color: var(--navy);
-    font-weight: 700; font-size: .82rem;
-    padding: 8px 16px; border-radius: 20px;
-    white-space: nowrap;
-  }
+  /* TABLE PICKER MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:var(--card);border-radius:var(--radius);padding:24px;width:100%;max-width:440px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;}
+  .modal-box h3{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:8px;color:var(--navy);}
+  .modal-sub{color:var(--muted);font-size:.88rem;margin-bottom:18px;line-height:1.5;}
+  .table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:20px;}
+  .table-tile{border:2px solid #e0e4f0;border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .18s;background:#fff;}
+  .table-tile:hover{border-color:var(--purple2);background:#f8f0ff;}
+  .table-tile.selected{border-color:var(--purple);background:#f0e6ff;}
+  .table-tile.occupied{opacity:.45;cursor:not-allowed;}
+  .table-tile.occupied:hover{border-color:#e0e4f0;background:#fff;}
+  .table-tile .t-icon{font-size:1.5rem;}
+  .table-tile .t-name{font-weight:700;font-size:.85rem;margin:4px 0 2px;color:var(--navy);}
+  .table-tile .t-status{font-size:.72rem;font-weight:600;}
+  .table-tile.occupied .t-status{color:var(--red);}
+  .table-tile:not(.occupied) .t-status{color:var(--green);}
+  .modal-err{color:var(--red);font-size:.85rem;margin-bottom:12px;display:none;}
+  .modal-err.show{display:block;}
+  .modal-actions{display:flex;gap:10px;}
+  .modal-btn{flex:1;padding:13px;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .2s;}
+  .modal-btn.primary{background:var(--purple);color:#fff;}
+  .modal-btn.primary:hover{background:var(--purple2);}
+  .modal-btn.primary:disabled{background:#b0b7cc;cursor:not-allowed;}
+  .modal-btn.secondary{background:#f0f2f8;color:var(--navy);}
 
-  /* ── SINGLE HEADER ORDER BUTTON ─────────────────── */
-  .order-btn {
-    background: linear-gradient(135deg, var(--gold), var(--gold2));
-    border: none; border-radius: 30px;
-    padding: 14px 28px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 800; font-size: 1.1rem;
-    color: var(--navy); cursor: pointer;
-    display: flex; align-items: center; gap: 10px;
-    transition: all .2s ease;
-    box-shadow: 0 4px 15px rgba(212, 168, 83, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .order-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(212, 168, 83, 0.5);
-  }
-  .order-btn:active { transform: scale(.96) translateY(0); }
-  .order-btn .badge {
-    background: var(--navy);
-    color: var(--gold2);
-    border-radius: 50%; min-width: 26px; height: 26px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .85rem; font-weight: 800;
-    padding: 0 6px;
-  }
+  /* HEADER */
+  .header{background:var(--navy);padding:20px 20px 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+  .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;}
+  .store-name{font-family:'Playfair Display',serif;color:var(--gold2);font-size:1.45rem;font-weight:700;letter-spacing:.5px;}
+  .header-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .table-badge{background:var(--gold);color:var(--navy);font-weight:700;font-size:.82rem;padding:8px 16px;border-radius:20px;white-space:nowrap;}
+  .staff-badge{background:rgba(156,39,176,.25);border:1px solid rgba(156,39,176,.5);color:#ce93d8;font-size:.78rem;font-weight:700;padding:6px 12px;border-radius:20px;white-space:nowrap;cursor:pointer;display:none;align-items:center;gap:6px;}
+  .staff-badge.show{display:flex;}
+  .order-btn{background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:30px;padding:14px 28px;font-family:'DM Sans',sans-serif;font-weight:800;font-size:1.1rem;color:var(--navy);cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;box-shadow:0 4px 15px rgba(212,168,83,.4);text-transform:uppercase;letter-spacing:.5px;}
+  .order-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(212,168,83,.5);}
+  .order-btn:active{transform:scale(.96);}
+  .order-btn .badge{background:var(--navy);color:var(--gold2);border-radius:50%;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;padding:0 6px;}
+  .cat-scroll{overflow-x:auto;display:flex;gap:8px;padding-bottom:2px;scrollbar-width:none;}
+  .cat-scroll::-webkit-scrollbar{display:none;}
+  .cat-pill{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.18);color:rgba(255,255,255,.75);border-radius:20px;padding:5px 16px;font-size:.84rem;font-weight:500;white-space:nowrap;cursor:pointer;transition:all .18s;}
+  .cat-pill.active,.cat-pill:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700;}
 
-  /* ── CATEGORY PILLS ──────────────────────────────── */
-  .cat-scroll {
-    overflow-x: auto; display: flex; gap: 8px;
-    padding-bottom: 2px; scrollbar-width: none;
-  }
-  .cat-scroll::-webkit-scrollbar { display: none; }
-  .cat-pill {
-    background: rgba(255,255,255,.08);
-    border: 1.5px solid rgba(255,255,255,.18);
-    color: rgba(255,255,255,.75);
-    border-radius: 20px; padding: 5px 16px;
-    font-size: .84rem; font-weight: 500;
-    white-space: nowrap; cursor: pointer;
-    transition: all .18s;
-  }
-  .cat-pill.active, .cat-pill:hover {
-    background: var(--gold);
-    border-color: var(--gold);
-    color: var(--navy);
-    font-weight: 700;
-  }
+  /* NAME */
+  .name-section{background:var(--card);margin:16px 16px 0;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border-left:4px solid var(--gold);}
+  .name-section label{font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:7px;}
+  .name-input{width:100%;border:2px solid #e0e4f0;border-radius:10px;padding:10px 14px;font-family:'DM Sans',sans-serif;font-size:1rem;outline:none;transition:border-color .2s;color:var(--navy);}
+  .name-input:focus{border-color:var(--gold);}
 
-  /* ── NAME INPUT SECTION ──────────────────────────── */
-  .name-section {
-    background: var(--card);
-    margin: 16px 16px 0;
-    border-radius: var(--radius);
-    padding: 16px;
-    box-shadow: var(--shadow);
-    border-left: 4px solid var(--gold);
-  }
-  .name-section label {
-    font-size: .8rem; font-weight: 700;
-    color: var(--muted); text-transform: uppercase;
-    letter-spacing: .5px; display: block; margin-bottom: 7px;
-  }
-  .name-input {
-    width: 100%; border: 2px solid #e0e4f0;
-    border-radius: 10px; padding: 10px 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 1rem; outline: none;
-    transition: border-color .2s;
-    color: var(--navy);
-  }
-  .name-input:focus { border-color: var(--gold); }
+  /* MENU */
+  .section-header{display:flex;align-items:center;gap:10px;padding:22px 16px 10px;}
+  .section-header .icon{font-size:1.4rem;}
+  .section-header h2{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--navy);}
+  .section-header .count{background:var(--navy);color:#fff;border-radius:20px;padding:2px 10px;font-size:.75rem;font-weight:700;margin-left:auto;}
+  .items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:0 16px 8px;}
+  .item-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .18s;position:relative;border:2px solid transparent;}
+  .item-card.in-cart{border-color:var(--gold);}
+  .item-card:active{transform:scale(.97);}
+  .item-img{width:100%;height:120px;object-fit:cover;display:block;background:linear-gradient(135deg,#e8eaf6,#f3f4f9);}
+  .item-img-placeholder{width:100%;height:120px;background:linear-gradient(135deg,#e8eaf6,#f3f4f9);display:flex;align-items:center;justify-content:center;font-size:2.5rem;}
+  .item-body{padding:10px 10px 12px;}
+  .item-name{font-weight:700;font-size:.9rem;line-height:1.3;margin-bottom:5px;color:var(--navy);}
+  .item-desc{font-size:.75rem;color:var(--muted);line-height:1.4;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .item-footer{display:flex;align-items:center;justify-content:space-between;}
+  .item-price{font-weight:800;font-size:.95rem;color:var(--green);}
+  .qty-badge{background:var(--gold);color:var(--navy);font-weight:800;font-size:.78rem;border-radius:20px;padding:3px 10px;display:none;}
+  .item-card.in-cart .qty-badge{display:block;}
+  .add-btn{background:var(--navy);color:#fff;border:none;border-radius:8px;width:30px;height:30px;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+  .item-card.in-cart .add-btn{background:var(--gold);color:var(--navy);}
+  .bottom-space{height:100px;}
 
-  /* ── SECTION HEADERS ─────────────────────────────── */
-  .section-header {
-    display: flex; align-items: center; gap: 10px;
-    padding: 22px 16px 10px;
-  }
-  .section-header .icon { font-size: 1.4rem; }
-  .section-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.15rem; font-weight: 700;
-    color: var(--navy);
-  }
-  .section-header .count {
-    background: var(--navy);
-    color: #fff; border-radius: 20px;
-    padding: 2px 10px; font-size: .75rem; font-weight: 700;
-    margin-left: auto;
-  }
+  /* DRAWER */
+  .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;}
+  .drawer-overlay.open{display:block;}
+  .drawer{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-radius:22px 22px 0 0;z-index:201;max-height:92vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:0 -8px 40px rgba(0,0,0,.18);}
+  .drawer.open{transform:translateY(0);}
+  .drawer-handle{width:44px;height:4px;background:#dde0eb;border-radius:2px;margin:14px auto 4px;}
+  .drawer-header{padding:8px 20px 14px;border-bottom:1.5px solid #f0f2f8;display:flex;align-items:center;justify-content:space-between;}
+  .drawer-header h3{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;}
+  .close-btn{background:#f0f2f8;border:none;border-radius:50%;width:34px;height:34px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .drawer-body{overflow-y:auto;flex:1;padding:12px 20px;}
+  .cart-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #f0f2f8;}
+  .cart-item:last-child{border-bottom:none;}
+  .cart-item-info{flex:1;}
+  .cart-item-name{font-weight:700;font-size:.92rem;margin-bottom:3px;}
+  .cart-item-price{color:var(--green);font-weight:700;font-size:.85rem;}
+  .extras-section{margin-top:10px;padding:10px;background:var(--cream);border-radius:10px;border:1px solid #e0e4f0;}
+  .extras-title{font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+  .extra-option{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin-bottom:6px;background:var(--card);border-radius:8px;cursor:pointer;transition:all .15s;border:2px solid transparent;}
+  .extra-option:hover{border-color:var(--gold);}
+  .extra-option.selected{border-color:var(--gold);background:#fff9ee;}
+  .extra-option-name{font-size:.85rem;font-weight:600;}
+  .extra-option-price{font-size:.8rem;color:var(--green);font-weight:700;}
+  .extra-checkbox{width:20px;height:20px;accent-color:var(--gold);}
+  .note-input{width:100%;margin-top:6px;border:1.5px solid #e0e4f0;border-radius:8px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:.8rem;resize:none;outline:none;color:var(--navy);transition:border-color .2s;}
+  .note-input:focus{border-color:var(--gold);}
+  .qty-controls{display:flex;align-items:center;gap:8px;}
+  .qty-btn{background:#f0f2f8;border:none;border-radius:8px;width:30px;height:30px;font-size:1.1rem;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+  .qty-btn:active{background:#e0e4f0;}
+  .qty-num{font-weight:800;font-size:.95rem;min-width:20px;text-align:center;}
+  .drawer-footer{padding:14px 20px 28px;border-top:1.5px solid #f0f2f8;}
+  .total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .total-label{font-weight:600;color:var(--muted);font-size:.9rem;}
+  .total-val{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--green);}
+  .order-note-wrap{margin-bottom:12px;}
+  .order-note-wrap label{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:5px;}
+  .order-note-input{width:100%;border:2px solid #e0e4f0;border-radius:10px;padding:9px 13px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;resize:none;color:var(--navy);transition:border-color .2s;}
+  .order-note-input:focus{border-color:var(--gold);}
 
-  /* ── ITEM CARDS ──────────────────────────────────── */
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 12px;
-    padding: 0 16px 8px;
-  }
-  .item-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform .18s, box-shadow .18s;
-    position: relative;
-    border: 2px solid transparent;
-  }
-  .item-card.in-cart { border-color: var(--gold); }
-  .item-card:active { transform: scale(.97); }
-  .item-img {
-    width: 100%; height: 120px;
-    object-fit: cover; display: block;
-    background: linear-gradient(135deg, #e8eaf6, #f3f4f9);
-  }
-  .item-img-placeholder {
-    width: 100%; height: 120px;
-    background: linear-gradient(135deg, #e8eaf6, #f3f4f9);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2.5rem;
-  }
-  .item-body { padding: 10px 10px 12px; }
-  .item-name {
-    font-weight: 700; font-size: .9rem;
-    line-height: 1.3; margin-bottom: 5px;
-    color: var(--navy);
-  }
-  .item-desc {
-    font-size: .75rem; color: var(--muted);
-    line-height: 1.4; margin-bottom: 7px;
-    display: -webkit-box; -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; overflow: hidden;
-  }
-  .item-footer {
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .item-price {
-    font-weight: 800; font-size: .95rem;
-    color: var(--green);
-  }
-  .qty-badge {
-    background: var(--gold);
-    color: var(--navy);
-    font-weight: 800; font-size: .78rem;
-    border-radius: 20px; padding: 3px 10px;
-    display: none;
-  }
-  .item-card.in-cart .qty-badge { display: block; }
-  .add-btn {
-    background: var(--navy);
-    color: #fff; border: none;
-    border-radius: 8px; width: 30px; height: 30px;
-    font-size: 1.2rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .15s;
-  }
-  .item-card.in-cart .add-btn { background: var(--gold); color: var(--navy); }
+  /* ACTION BUTTONS */
+  .action-buttons{display:flex;gap:8px;flex-wrap:wrap;}
+  .action-buttons>button{flex:1;min-width:110px;}
+  .submit-btn{padding:14px 8px;background:var(--navy);color:#fff;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.86rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;}
+  .submit-btn:active{transform:scale(.98);}
+  .submit-btn:disabled{background:#b0b7cc;cursor:not-allowed;}
+  .whatsapp-submit-btn{padding:14px 8px;background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-dark));color:#fff;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.86rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;box-shadow:0 4px 15px rgba(37,211,102,.25);}
+  .whatsapp-submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,211,102,.4);}
+  .whatsapp-submit-btn:active{transform:scale(.98);}
+  .create-order-btn{padding:14px 8px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.86rem;cursor:pointer;align-items:center;justify-content:center;gap:5px;transition:all .2s;box-shadow:0 4px 15px rgba(106,27,154,.25);display:none;}
+  .create-order-btn.staff-visible{display:flex;}
+  .create-order-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(106,27,154,.4);}
+  .create-order-btn:active{transform:scale(.98);}
+  .create-order-btn:disabled{background:#b0b7cc;cursor:not-allowed;transform:none;}
 
-  /* ── BOTTOM SPACER ───────────────────────────────── */
-  .bottom-space { height: 100px; }
+  /* SUCCESS */
+  .success-screen{display:none;position:fixed;inset:0;background:var(--cream);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;overflow-y:auto;}
+  .success-screen.show{display:flex;}
+  .success-icon{font-size:5rem;margin-bottom:20px;animation:pop .4s ease;}
+  @keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .success-screen h2{font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:10px;color:var(--navy);}
+  .success-screen p{color:var(--muted);font-size:1rem;line-height:1.6;}
+  .success-items{background:var(--card);border-radius:var(--radius);padding:16px 20px;margin:20px 0;width:100%;max-width:360px;text-align:left;box-shadow:var(--shadow);}
+  .success-items li{padding:5px 0;border-bottom:1px solid #f0f2f8;font-size:.9rem;list-style:none;}
+  .success-items li:last-child{border-bottom:none;}
+  .ready-time-banner{background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--gold2);border-radius:var(--radius);padding:18px 24px;margin:0 0 20px;width:100%;max-width:360px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 20px rgba(26,31,54,.2);}
+  .ready-time-banner .clock-icon{font-size:2.2rem;flex-shrink:0;}
+  .ready-time-banner .ready-label{font-size:.75rem;font-weight:600;color:rgba(240,201,110,.7);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+  .ready-time-banner .ready-time{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;}
 
-  /* ── CART DRAWER ─────────────────────────────────── */
-  .drawer-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.45); z-index: 200;
-  }
-  .drawer-overlay.open { display: block; }
-  .drawer {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: var(--card);
-    border-radius: 22px 22px 0 0;
-    z-index: 201; max-height: 90vh;
-    display: flex; flex-direction: column;
-    transform: translateY(100%);
-    transition: transform .3s cubic-bezier(.4,0,.2,1);
-    box-shadow: 0 -8px 40px rgba(0,0,0,.18);
-  }
-  .drawer.open { transform: translateY(0); }
-  .drawer-handle {
-    width: 44px; height: 4px;
-    background: #dde0eb; border-radius: 2px;
-    margin: 14px auto 4px;
-  }
-  .drawer-header {
-    padding: 8px 20px 14px;
-    border-bottom: 1.5px solid #f0f2f8;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .drawer-header h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem; font-weight: 700;
-  }
-  .close-btn {
-    background: #f0f2f8; border: none;
-    border-radius: 50%; width: 34px; height: 34px;
-    font-size: 1.1rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .drawer-body {
-    overflow-y: auto; flex: 1; padding: 12px 20px;
-  }
-  .cart-item {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid #f0f2f8;
-  }
-  .cart-item:last-child { border-bottom: none; }
-  .cart-item-info { flex: 1; }
-  .cart-item-name { font-weight: 700; font-size: .92rem; margin-bottom: 3px; }
-  .cart-item-price { color: var(--green); font-weight: 700; font-size: .85rem; }
+  /* WIFI ERROR */
+  .wifi-error{display:none;position:fixed;inset:0;background:var(--navy);z-index:400;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;}
+  .wifi-error.show{display:flex;}
+  .wifi-error h2{font-family:'Playfair Display',serif;color:var(--gold2);font-size:1.6rem;margin:16px 0 10px;}
+  .wifi-error p{color:rgba(255,255,255,.7);font-size:.95rem;line-height:1.6;}
+  .empty-cart{text-align:center;padding:32px 20px;color:var(--muted);}
+  .empty-cart .e-icon{font-size:3rem;margin-bottom:10px;}
+  .empty-cart p{font-size:.9rem;}
 
-  /* ── EXTRAS SECTION IN CART ─────────────────────── */
-  .extras-section {
-    margin-top: 10px;
-    padding: 10px;
-    background: var(--cream);
-    border-radius: 10px;
-    border: 1px solid #e0e4f0;
-  }
-  .extras-title {
-    font-size: .75rem;
-    font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-  }
-  .extra-option {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 10px;
-    margin-bottom: 6px;
-    background: var(--card);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all .15s;
-    border: 2px solid transparent;
-  }
-  .extra-option:hover { border-color: var(--gold); }
-  .extra-option.selected {
-    border-color: var(--gold);
-    background: #fff9ee;
-  }
-  .extra-option-name { font-size: .85rem; font-weight: 600; }
-  .extra-option-price { font-size: .8rem; color: var(--green); font-weight: 700; }
-  .extra-checkbox { width: 20px; height: 20px; accent-color: var(--gold); }
-
-  .note-input {
-    width: 100%; margin-top: 6px;
-    border: 1.5px solid #e0e4f0; border-radius: 8px;
-    padding: 6px 10px; font-family: 'DM Sans', sans-serif;
-    font-size: .8rem; resize: none; outline: none;
-    color: var(--navy);
-    transition: border-color .2s;
-  }
-  .note-input:focus { border-color: var(--gold); }
-  .qty-controls {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .qty-btn {
-    background: #f0f2f8; border: none;
-    border-radius: 8px; width: 30px; height: 30px;
-    font-size: 1.1rem; cursor: pointer; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    transition: background .15s;
-  }
-  .qty-btn:active { background: #e0e4f0; }
-  .qty-num {
-    font-weight: 800; font-size: .95rem;
-    min-width: 20px; text-align: center;
-  }
-
-  /* ── DRAWER FOOTER ───────────────────────────────── */
-  .drawer-footer {
-    padding: 14px 20px 28px;
-    border-top: 1.5px solid #f0f2f8;
-  }
-  .total-row {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 14px;
-  }
-  .total-label { font-weight: 600; color: var(--muted); font-size: .9rem; }
-  .total-val {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem; font-weight: 700; color: var(--green);
-  }
-
-  /* order note */
-  .order-note-wrap { margin-bottom: 12px; }
-  .order-note-wrap label {
-    font-size: .78rem; font-weight: 700; color: var(--muted);
-    text-transform: uppercase; letter-spacing: .4px;
-    display: block; margin-bottom: 5px;
-  }
-  .order-note-input {
-    width: 100%; border: 2px solid #e0e4f0;
-    border-radius: 10px; padding: 9px 13px;
-    font-family: 'DM Sans', sans-serif; font-size: .9rem;
-    outline: none; resize: none; color: var(--navy);
-    transition: border-color .2s;
-  }
-  .order-note-input:focus { border-color: var(--gold); }
-
-  /* ── TWO ACTION BUTTONS IN FOOTER ───────────────── */
-  .action-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 4px;
-  }
-
-  .submit-btn {
-    flex: 1;
-    padding: 15px 10px;
-    background: var(--navy);
-    color: #fff; border: none; border-radius: 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700; font-size: .95rem;
-    cursor: pointer; letter-spacing: .2px;
-    transition: background .2s, transform .15s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .submit-btn:active { transform: scale(.98); }
-  .submit-btn:disabled {
-    background: #b0b7cc; cursor: not-allowed; transform: none;
-  }
-  .submit-btn.loading::after { content: ' ⏳'; }
-
-  .whatsapp-submit-btn {
-    flex: 1;
-    padding: 15px 10px;
-    background: linear-gradient(135deg, var(--whatsapp), var(--whatsapp-dark));
-    color: #fff; border: none; border-radius: 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700; font-size: .95rem;
-    cursor: pointer; letter-spacing: .2px;
-    transition: all .2s, transform .15s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);
-  }
-  .whatsapp-submit-btn:hover {
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-    transform: translateY(-1px);
-  }
-  .whatsapp-submit-btn:active { transform: scale(.98); }
-
-  /* ── SUCCESS SCREEN ──────────────────────────────── */
-  .success-screen {
-    display: none; position: fixed; inset: 0;
-    background: var(--cream); z-index: 300;
-    flex-direction: column; align-items: center; justify-content: center;
-    padding: 32px; text-align: center;
-    overflow-y: auto;
-  }
-  .success-screen.show { display: flex; }
-  .success-icon { font-size: 5rem; margin-bottom: 20px; animation: pop .4s ease; }
-  @keyframes pop {
-    0% { transform: scale(.3); } 70% { transform: scale(1.15); } 100% { transform: scale(1); }
-  }
-  .success-screen h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.8rem; margin-bottom: 10px; color: var(--navy);
-  }
-  .success-screen p { color: var(--muted); font-size: 1rem; line-height: 1.6; }
-  .success-items {
-    background: var(--card); border-radius: var(--radius);
-    padding: 16px 20px; margin: 20px 0; width: 100%;
-    max-width: 360px; text-align: left;
-    box-shadow: var(--shadow);
-  }
-  .success-items li {
-    padding: 5px 0; border-bottom: 1px solid #f0f2f8;
-    font-size: .9rem; list-style: none;
-  }
-  .success-items li:last-child { border-bottom: none; }
-
-  /* ── READY TIME BANNER ───────────────────────────── */
-  .ready-time-banner {
-    background: linear-gradient(135deg, var(--navy), var(--navy2));
-    color: var(--gold2);
-    border-radius: var(--radius);
-    padding: 18px 24px;
-    margin: 0 0 20px;
-    width: 100%;
-    max-width: 360px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    box-shadow: 0 4px 20px rgba(26,31,54,.2);
-  }
-  .ready-time-banner .clock-icon { font-size: 2.2rem; flex-shrink: 0; }
-  .ready-time-banner .ready-text { text-align: left; }
-  .ready-time-banner .ready-label {
-    font-size: .75rem; font-weight: 600;
-    color: rgba(240,201,110,.7);
-    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px;
-  }
-  .ready-time-banner .ready-time {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem; font-weight: 700; color: var(--gold2);
-  }
-
-  /* ── WIFI ERROR ───────────────────────────────────── */
-  .wifi-error {
-    display: none; position: fixed; inset: 0;
-    background: var(--navy); z-index: 400;
-    flex-direction: column; align-items: center;
-    justify-content: center; padding: 32px; text-align: center;
-  }
-  .wifi-error.show { display: flex; }
-  .wifi-error h2 {
-    font-family: 'Playfair Display', serif;
-    color: var(--gold2); font-size: 1.6rem; margin: 16px 0 10px;
-  }
-  .wifi-error p { color: rgba(255,255,255,.7); font-size: .95rem; line-height: 1.6; }
-
-  /* ── EMPTY CART ──────────────────────────────────── */
-  .empty-cart {
-    text-align: center; padding: 32px 20px;
-    color: var(--muted);
-  }
-  .empty-cart .e-icon { font-size: 3rem; margin-bottom: 10px; }
-  .empty-cart p { font-size: .9rem; }
-
-  /* ── TABLE CONFLICT MODAL ─────────────────────────── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.6); z-index: 500;
-    align-items: center; justify-content: center;
-    padding: 20px;
-  }
-  .modal-overlay.show { display: flex; }
-  .modal-content {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 24px;
-    max-width: 400px;
-    width: 100%;
-    box-shadow: var(--shadow);
-  }
-  .modal-content h3 {
-    font-family: 'Playfair Display', serif;
-    margin-bottom: 12px; color: var(--navy);
-  }
-  .modal-content p { color: var(--muted); margin-bottom: 16px; font-size: .9rem; }
-  .table-list {
-    display: flex; flex-direction: column; gap: 8px;
-    max-height: 200px; overflow-y: auto; margin-bottom: 16px;
-  }
-  .table-option {
-    padding: 12px; border: 2px solid #e0e4f0;
-    border-radius: 10px; cursor: pointer; transition: all .2s;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .table-option:hover, .table-option.selected {
-    border-color: var(--gold); background: var(--cream);
-  }
-  .table-option.occupied { opacity: .6; cursor: not-allowed; }
-  .modal-actions { display: flex; gap: 10px; }
-  .modal-btn {
-    flex: 1; padding: 12px; border: none;
-    border-radius: 10px; font-weight: 700; cursor: pointer; transition: all .2s;
-  }
-  .modal-btn.primary { background: var(--navy); color: #fff; }
-  .modal-btn.secondary { background: #f0f2f8; color: var(--navy); }
-
-  @media (min-width: 480px) {
-    .items-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
-    .order-btn { padding: 16px 32px; font-size: 1.2rem; }
-  }
-
-  @media (max-width: 400px) {
-    .header-top { flex-direction: column; align-items: flex-start; }
-    .action-buttons { flex-direction: column; }
-    .submit-btn, .whatsapp-submit-btn { width: 100%; }
-  }
+  @media(min-width:480px){.items-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));}}
+  @media(max-width:380px){.action-buttons{flex-direction:column;}.action-buttons>button{min-width:unset;}}
 </style>
 </head>
 <body>
 
-<!-- WiFi Error Screen -->
+<!-- WIFI ERROR -->
 <div class="wifi-error" id="wifiError">
   <div style="font-size:4rem">📶</div>
   <h2>Connect to Restaurant WiFi</h2>
-  <p>You need to be connected to the restaurant's WiFi network to place an order here.<br><br>
-  Please connect and try again, or ask a staff member for assistance.</p>
+  <p>You need to be connected to the restaurant's WiFi to place an order.<br><br>Please connect and try again, or ask a staff member for assistance.</p>
 </div>
 
-<!-- Table Conflict Modal -->
-<div class="modal-overlay" id="tableModal">
-  <div class="modal-content">
-    <h3>⚠️ Table Occupied</h3>
-    <p id="tableModalText">This table already has an active order. Please select another table:</p>
-    <div class="table-list" id="tableList"></div>
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo" id="loginStoreName">🍽️ Restaurant</div>
+    <div class="login-subtitle">Staff Login</div>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username" autocomplete="off" autocapitalize="none"/>
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password"/>
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="guest-link"><a onclick="closeLogin()">Continue as guest (customer order)</a></div>
+  </div>
+</div>
+
+<!-- TABLE PICKER MODAL -->
+<div class="modal-overlay" id="tablePickerModal">
+  <div class="modal-box">
+    <h3>🪑 Choose Table</h3>
+    <p class="modal-sub" id="tablePickerSub">Select the table for this order. Your cart will not be cleared unless you confirm.</p>
+    <div class="modal-err" id="tablePickerErr"></div>
+    <div class="table-grid" id="tableGrid"></div>
     <div class="modal-actions">
-      <button class="modal-btn secondary" onclick="closeTableModal()">Cancel</button>
-      <button class="modal-btn primary" id="confirmTableBtn" onclick="confirmTableChange()">Confirm</button>
+      <button class="modal-btn secondary" onclick="closeTablePicker()">Cancel</button>
+      <button class="modal-btn primary" id="confirmTableBtn" onclick="confirmCreateOrder()" disabled>Create Order</button>
     </div>
   </div>
 </div>
 
-<!-- Success Screen -->
+<!-- SUCCESS SCREEN -->
 <div class="success-screen" id="successScreen">
   <div class="success-icon">✅</div>
-  <h2>Order Sent!</h2>
-  <p>Your request has been sent to the cashier.<br>A staff member will assist you shortly.</p>
+  <h2 id="successTitle">Order Sent!</h2>
+  <p id="successDesc">Your request has been sent to the cashier.<br>A staff member will assist you shortly.</p>
   <ul class="success-items" id="successItems"></ul>
   <div class="ready-time-banner">
     <div class="clock-icon">⏱️</div>
-    <div class="ready-text">
+    <div>
       <div class="ready-label">Estimated Ready Time</div>
       <div class="ready-time">15 – 25 minutes</div>
     </div>
   </div>
-  <p style="color:var(--muted);font-size:.85rem;margin-top:4px">
-    This screen will close in <span id="successCountdown">10</span>s
-  </p>
+  <p style="color:var(--muted);font-size:.85rem">This screen will close in <span id="successCountdown">10</span>s</p>
 </div>
 
-<!-- Main App -->
+<!-- MAIN APP -->
 <div id="app">
-
-  <!-- HEADER -->
   <div class="header">
     <div class="header-top">
       <span class="store-name" id="storeName">🍽️ Restaurant</span>
       <div class="header-right">
         <span class="table-badge" id="tableBadge">Table —</span>
-        <!-- Single cart button — WhatsApp is now INSIDE the drawer -->
-        <button class="order-btn" onclick="openCart()">
-          🛒 Order <span class="badge" id="cartCount">0</span>
-        </button>
+        <span class="staff-badge" id="staffBadge" onclick="offerLogout()">👤 <span id="staffName"></span></span>
+        <button class="order-btn" onclick="openCart()">🛒 Order <span class="badge" id="cartCount">0</span></button>
       </div>
     </div>
     <div class="cat-scroll" id="catScroll"></div>
   </div>
 
-  <!-- NAME INPUT -->
   <div class="name-section">
     <label>Your Name (for the cashier)</label>
-    <input class="name-input" id="customerName" type="text"
-           placeholder="e.g. John" maxlength="60" autocomplete="off"/>
+    <input class="name-input" id="customerName" type="text" placeholder="e.g. John" maxlength="60" autocomplete="off"/>
   </div>
 
-  <!-- MENU CONTENT -->
   <div id="menuContent"></div>
   <div class="bottom-space"></div>
 </div>
@@ -628,67 +283,65 @@
   <div class="drawer-footer">
     <div class="order-note-wrap">
       <label>Order Note (optional)</label>
-      <textarea class="order-note-input" id="orderNote" rows="2"
-                placeholder="Any special requests for the whole order..."></textarea>
+      <textarea class="order-note-input" id="orderNote" rows="2" placeholder="Any special requests..."></textarea>
     </div>
     <div class="total-row">
       <span class="total-label">Total</span>
       <span class="total-val" id="drawerTotal">$0.00</span>
     </div>
-    <!-- TWO BUTTONS: POS order + WhatsApp -->
     <div class="action-buttons">
-      <button class="submit-btn" id="submitBtn" onclick="submitOrder()">
-        🍽️ Order via App
-      </button>
-      <button class="whatsapp-submit-btn" id="whatsappBtn" onclick="orderByWhatsApp()">
-        💬 WhatsApp
-      </button>
+      <button class="submit-btn"          id="submitBtn"      onclick="submitOrder()">🍽️ Order via App</button>
+      <button class="whatsapp-submit-btn" id="whatsappBtn"    onclick="orderByWhatsApp()">💬 WhatsApp</button>
+      <button class="create-order-btn"    id="createOrderBtn" onclick="openTablePicker()">⚡ Create Order</button>
     </div>
   </div>
 </div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  CONFIG — fill in your Supabase credentials
+//  CONFIG  — fill in your Supabase credentials
 // ═══════════════════════════════════════════════════════════════
 const CONFIG = {
   SUPABASE_URL:  'https://czwfskjedvmkmbhgugbp.supabase.co',
   SUPABASE_ANON: 'sb_publishable_S-U75D86AhZb2bpteSrzAA_W0g4xUcX',
   SECRET_TOKEN:  'MYREST2024',
-  PHONE_NUMBER:  '',   // loaded from Supabase public_settings at runtime
+  PHONE_NUMBER:  '',
   STORE_NAME:    'Restaurant',
 };
 
-// ═══════════════════════════════════════════════════════════════
-//  HEADERS HELPER  — was missing before, caused all fetch errors
-// ═══════════════════════════════════════════════════════════════
-function sbHeaders() {
-  return {
+function sbHeaders(extra) {
+  return Object.assign({
     'apikey':        CONFIG.SUPABASE_ANON,
     'Authorization': 'Bearer ' + CONFIG.SUPABASE_ANON,
     'Content-Type':  'application/json',
-  };
+  }, extra || {});
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════════════════════
-let menuData         = [];
-let allItems         = [];
-let cart             = {};
-let tableNum         = '';
-let tableId          = 0;
-let availableTables  = [];
-let pendingTableChange = null;
-let itemExtrasMap    = {};   // parentPosId → [ extraItem, ... ]
+// ── STATE ──────────────────────────────────────────────────────
+let menuData     = [];
+let allItems     = [];
+let cart         = {};
+let tableNum     = '';
+let tableId      = 0;
+let itemExtrasMap = {};
 let restaurantSettings = {};
+
+// Staff session
+let staffLoggedIn   = false;
+let staffUsername   = '';
+let staffUserId     = 0;
+
+// Table picker
+let availableTables = [];
+let pickedTableId   = null;
+let pickedTableName = '';
 
 // ═══════════════════════════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
-  const token  = params.get('t')     || '';
+  const token  = params.get('t') || '';
   tableNum     = params.get('table') || '';
   tableId      = parseInt(params.get('tid') || '0');
 
@@ -698,112 +351,135 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   await loadRestaurantSettings();
-
-  document.getElementById('storeName').textContent =
-    '🍽️ ' + (CONFIG.STORE_NAME || 'Restaurant');
-  document.getElementById('tableBadge').textContent =
-    tableNum ? 'Table ' + tableNum : 'Walk-in';
-  document.title = (CONFIG.STORE_NAME || 'Restaurant') + ' — Order';
+  document.getElementById('storeName').textContent      = '🍽️ ' + CONFIG.STORE_NAME;
+  document.getElementById('loginStoreName').textContent = '🍽️ ' + CONFIG.STORE_NAME;
+  document.getElementById('tableBadge').textContent     = tableNum ? 'Table ' + tableNum : 'Walk-in';
+  document.title = CONFIG.STORE_NAME + ' — Order';
 
   await loadMenu();
-  await loadTableStatus();
   await loadItemExtras();
 });
 
 // ═══════════════════════════════════════════════════════════════
-//  LOAD RESTAURANT SETTINGS FROM SUPABASE public_settings
+//  SETTINGS
 // ═══════════════════════════════════════════════════════════════
 async function loadRestaurantSettings() {
   try {
-    const res = await fetch(
-      CONFIG.SUPABASE_URL + '/rest/v1/public_settings',
-      { headers: sbHeaders() }
-    );
+    const res = await fetch(CONFIG.SUPABASE_URL + '/rest/v1/public_settings', { headers: sbHeaders() });
     if (!res.ok) return;
-
-    const settings = await res.json();
-    settings.forEach(s => { restaurantSettings[s.key] = s.value; });
-
+    const rows = await res.json();
+    rows.forEach(r => { restaurantSettings[r.key] = r.value; });
     CONFIG.PHONE_NUMBER = restaurantSettings.restaurant_phone || '';
     CONFIG.STORE_NAME   = restaurantSettings.restaurant_name  || 'Restaurant';
-
-    document.getElementById('storeName').textContent = '🍽️ ' + CONFIG.STORE_NAME;
-    document.title = CONFIG.STORE_NAME + ' — Order';
-  } catch(e) {
-    console.error('Failed to load settings:', e);
-  }
+  } catch(e) {}
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  LOAD TABLE STATUS
+//  STAFF LOGIN
 // ═══════════════════════════════════════════════════════════════
-async function loadTableStatus() {
+function openLogin() {
+  document.getElementById('loginScreen').classList.add('show');
+  document.getElementById('loginUser').focus();
+  document.getElementById('loginPass').onkeydown = e => { if (e.key === 'Enter') doLogin(); };
+  document.getElementById('loginUser').onkeydown = e => { if (e.key === 'Enter') document.getElementById('loginPass').focus(); };
+}
+
+function closeLogin() {
+  document.getElementById('loginScreen').classList.remove('show');
+  document.getElementById('loginErr').classList.remove('show');
+  document.getElementById('loginErr').textContent = '';
+  document.getElementById('loginPass').value = '';
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl    = document.getElementById('loginErr');
+  const btn      = document.getElementById('loginBtn');
+
+  errEl.classList.remove('show');
+  if (!username || !password) {
+    errEl.textContent = 'Please enter username and password.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.disabled    = true;
+  btn.textContent = 'Signing in…';
+
   try {
-    const res = await fetch(
-      CONFIG.SUPABASE_URL + '/rest/v1/RestaurantTables?select=TableID,TableName,IsActive',
-      { headers: sbHeaders() }
-    );
-    const tables = await res.json();
+    // SHA-256 hash matching C# SHA256 hex output
+    const hash = await sha256(password);
 
-    const ordersRes = await fetch(
-      CONFIG.SUPABASE_URL +
-        '/rest/v1/RestaurantOrders?select=TableID,Status&Status=eq.Open&Status=eq.Preparing&Status=eq.Bill',
-      { headers: sbHeaders() }
-    );
-    const activeOrders = await ordersRes.json();
-    const occupiedTableIds = new Set(
-      activeOrders.map(o => o.TableID).filter(id => id !== null)
-    );
+    // Query RestaurantUsers via Supabase — table must be exposed in Supabase schema
+    // Column names in Supabase use snake_case via PostgREST
+    const url = CONFIG.SUPABASE_URL + '/rest/v1/RestaurantUsers' +
+      '?Username=eq.' + encodeURIComponent(username) +
+      '&PasswordHash=eq.' + encodeURIComponent(hash) +
+      '&IsActive=eq.true' +
+      '&select=UserID,FullName';
 
-    availableTables = tables.map(t => ({
-      id:        t.TableID,
-      name:      t.TableName,
-      occupied:  occupiedTableIds.has(t.TableID),
-      isCurrent: t.TableID === tableId
-    }));
+    const res = await fetch(url, { headers: sbHeaders() });
+    if (!res.ok) throw new Error('Server error ' + res.status);
+    const rows = await res.json();
+
+    if (!rows || rows.length === 0) {
+      errEl.textContent = 'Invalid username or password.';
+      errEl.classList.add('show');
+      return;
+    }
+
+    staffLoggedIn = true;
+    staffUsername = rows[0].FullName || username;
+    staffUserId   = rows[0].UserID;
+
+    document.getElementById('staffName').textContent = staffUsername;
+    document.getElementById('staffBadge').classList.add('show');
+    document.getElementById('createOrderBtn').classList.add('staff-visible');
+
+    // Pre-fill name if empty
+    const nameEl = document.getElementById('customerName');
+    if (!nameEl.value.trim()) nameEl.value = staffUsername;
+
+    closeLogin();
   } catch(e) {
-    console.error('Failed to load table status:', e);
+    errEl.textContent = 'Login error: ' + e.message;
+    errEl.classList.add('show');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Sign In';
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  LOAD ITEM EXTRAS RELATIONSHIPS
-// ═══════════════════════════════════════════════════════════════
-async function loadItemExtras() {
-  try {
-    const res = await fetch(
-      CONFIG.SUPABASE_URL + '/rest/v1/menu_item_extras?select=parent_pos_id,extra_pos_id',
-      { headers: sbHeaders() }
-    );
-    if (!res.ok) return;
-
-    const extras = await res.json();
-    itemExtrasMap = {};
-    extras.forEach(ex => {
-      if (!itemExtrasMap[ex.parent_pos_id])
-        itemExtrasMap[ex.parent_pos_id] = [];
-      itemExtrasMap[ex.parent_pos_id].push(ex.extra_pos_id);
-    });
-  } catch(e) {
-    console.error('Failed to load item extras:', e);
+function offerLogout() {
+  if (confirm('Log out of staff mode?\n\nThe "Create Order" button will be hidden.')) {
+    staffLoggedIn = false;
+    staffUsername = '';
+    staffUserId   = 0;
+    document.getElementById('staffBadge').classList.remove('show');
+    document.getElementById('createOrderBtn').classList.remove('staff-visible');
   }
 }
 
+// SHA-256 matching C# SHA256 hex (UTF-8 input)
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
 // ═══════════════════════════════════════════════════════════════
-//  LOAD MENU FROM SUPABASE
+//  MENU LOAD
 // ═══════════════════════════════════════════════════════════════
 async function loadMenu() {
   try {
     const catRes = await fetch(
       CONFIG.SUPABASE_URL + '/rest/v1/menu_categories?is_active=eq.true&order=sort_order',
-      { headers: sbHeaders() }
-    );
+      { headers: sbHeaders() });
     const categories = await catRes.json();
 
     const itemRes = await fetch(
       CONFIG.SUPABASE_URL + '/rest/v1/menu_items?is_active=eq.true&order=sort_order',
-      { headers: sbHeaders() }
-    );
+      { headers: sbHeaders() });
     const items = await itemRes.json();
 
     allItems = items;
@@ -822,14 +498,27 @@ async function loadMenu() {
     renderMenu();
   } catch(e) {
     document.getElementById('menuContent').innerHTML =
-      '<div style="text-align:center;padding:40px;color:#888">' +
-      '<div style="font-size:3rem">😕</div>' +
-      '<p style="margin-top:12px">Could not load menu. Please try again.</p></div>';
+      '<div style="text-align:center;padding:40px;color:#888"><div style="font-size:3rem">😕</div><p style="margin-top:12px">Could not load menu. Please try again.</p></div>';
   }
 }
 
+async function loadItemExtras() {
+  try {
+    const res = await fetch(
+      CONFIG.SUPABASE_URL + '/rest/v1/menu_item_extras?select=parent_pos_id,extra_pos_id',
+      { headers: sbHeaders() });
+    if (!res.ok) return;
+    const extras = await res.json();
+    itemExtrasMap = {};
+    extras.forEach(ex => {
+      if (!itemExtrasMap[ex.parent_pos_id]) itemExtrasMap[ex.parent_pos_id] = [];
+      itemExtrasMap[ex.parent_pos_id].push(ex.extra_pos_id);
+    });
+  } catch(e) {}
+}
+
 // ═══════════════════════════════════════════════════════════════
-//  RENDER
+//  RENDER MENU
 // ═══════════════════════════════════════════════════════════════
 function renderCategoryPills() {
   const scroll = document.getElementById('catScroll');
@@ -839,7 +528,6 @@ function renderCategoryPills() {
   allPill.textContent = '🍽️ All';
   allPill.onclick = () => scrollToSection('all', allPill);
   scroll.appendChild(allPill);
-
   menuData.forEach(cat => {
     const pill = document.createElement('button');
     pill.className = 'cat-pill';
@@ -852,10 +540,9 @@ function renderCategoryPills() {
 function scrollToSection(id, pill) {
   document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
   pill.classList.add('active');
-  if (id === 'all') {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } else {
-    const el = document.getElementById('section-' + id.replace('cat-', ''));
+  if (id === 'all') window.scrollTo({ top: 0, behavior: 'smooth' });
+  else {
+    const el = document.getElementById('section-' + id.replace('cat-',''));
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
@@ -863,19 +550,13 @@ function scrollToSection(id, pill) {
 function renderMenu() {
   const content = document.getElementById('menuContent');
   content.innerHTML = '';
-
   menuData.forEach(cat => {
     const section = document.createElement('div');
     section.id = 'section-' + cat.id;
-
     const hdr = document.createElement('div');
     hdr.className = 'section-header';
-    hdr.innerHTML =
-      '<span class="icon">' + cat.icon + '</span>' +
-      '<h2>' + cat.name + '</h2>' +
-      '<span class="count">' + cat.items.length + '</span>';
+    hdr.innerHTML = '<span class="icon">'+cat.icon+'</span><h2>'+cat.name+'</h2><span class="count">'+cat.items.length+'</span>';
     section.appendChild(hdr);
-
     const grid = document.createElement('div');
     grid.className = 'items-grid';
     cat.items.forEach(item => grid.appendChild(buildItemCard(item)));
@@ -888,520 +569,462 @@ function buildItemCard(item) {
   const card = document.createElement('div');
   card.className = 'item-card';
   card.id = 'card-' + item.id;
-
   const inCart = cart[item.id];
-
   if (item.image_url) {
-    card.innerHTML +=
-      '<img class="item-img" src="' + item.image_url +
-      '" alt="' + item.name +
-      '" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"/>' +
-      '<div class="item-img-placeholder" style="display:none">🍽️</div>';
+    card.innerHTML += '<img class="item-img" src="'+item.image_url+'" alt="'+item.name+'" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"/><div class="item-img-placeholder" style="display:none">🍽️</div>';
   } else {
     card.innerHTML += '<div class="item-img-placeholder">🍽️</div>';
   }
-
   card.innerHTML +=
-    '<div class="item-body">' +
-      '<div class="item-name">' + escHtml(item.name) + '</div>' +
-      (item.description
-        ? '<div class="item-desc">' + escHtml(item.description) + '</div>'
-        : '') +
-      '<div class="item-footer">' +
-        '<span class="item-price">$' + parseFloat(item.price_usd).toFixed(2) + '</span>' +
-        '<span class="qty-badge">×' + (inCart ? inCart.qty : 0) + '</span>' +
-        '<button class="add-btn" onclick="addToCart(event,' + item.id + ')">+</button>' +
-      '</div>' +
+    '<div class="item-body">'+
+      '<div class="item-name">'+escHtml(item.name)+'</div>'+
+      (item.description?'<div class="item-desc">'+escHtml(item.description)+'</div>':'')+
+      '<div class="item-footer">'+
+        '<span class="item-price">$'+parseFloat(item.price_usd).toFixed(2)+'</span>'+
+        '<span class="qty-badge">×'+(inCart?inCart.qty:0)+'</span>'+
+        '<button class="add-btn" onclick="addToCart(event,'+item.id+')">+</button>'+
+      '</div>'+
     '</div>';
-
   if (inCart) card.classList.add('in-cart');
   return card;
 }
 
 function refreshCard(itemId) {
-  const oldCard = document.getElementById('card-' + itemId);
+  const oldCard = document.getElementById('card-'+itemId);
   if (!oldCard) return;
   for (const cat of menuData) {
     const item = cat.items.find(i => i.id === itemId);
-    if (item) {
-      const newCard = buildItemCard(item);
-      oldCard.parentNode.replaceChild(newCard, oldCard);
-      return;
-    }
+    if (item) { oldCard.parentNode.replaceChild(buildItemCard(item), oldCard); return; }
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  CART LOGIC
+//  CART
 // ═══════════════════════════════════════════════════════════════
 function addToCart(e, itemId) {
   e.stopPropagation();
   let item = null;
-  for (const cat of menuData)
-    for (const i of cat.items)
-      if (i.id === itemId) { item = i; break; }
+  for (const cat of menuData) for (const i of cat.items) if (i.id === itemId) { item = i; break; }
   if (!item) return;
-
-  if (!cart[itemId]) {
-    cart[itemId] = { item, qty: 1, note: '', extras: [] };
-  } else {
-    cart[itemId].qty++;
-  }
-  updateCartBadge();
-  refreshCard(itemId);
+  if (!cart[itemId]) cart[itemId] = { item, qty: 1, note: '', extras: [] };
+  else cart[itemId].qty++;
+  updateCartBadge(); refreshCard(itemId);
 }
 
 function updateCartBadge() {
-  const total = Object.values(cart).reduce(
-    (s, c) => s + c.qty + c.extras.reduce((es, ex) => es + ex.qty, 0), 0
-  );
+  const total = Object.values(cart).reduce((s,c) => s + c.qty + c.extras.reduce((es,ex) => es+ex.qty,0), 0);
   document.getElementById('cartCount').textContent = total;
 }
 
-function openCart() {
-  renderDrawer();
-  document.getElementById('drawerOverlay').classList.add('open');
-  document.getElementById('drawer').classList.add('open');
-}
+function openCart()  { renderDrawer(); document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('drawer').classList.add('open'); }
+function closeCart() { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('drawer').classList.remove('open'); }
 
-function closeCart() {
-  document.getElementById('drawerOverlay').classList.remove('open');
-  document.getElementById('drawer').classList.remove('open');
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  EXTRAS MANAGEMENT
-// ═══════════════════════════════════════════════════════════════
 function getAvailableExtras(parentItemId) {
-  // parentItemId is the Supabase id; extras map is keyed by pos_id
-  // items in allItems have both .id (supabase) and .pos_id
   const item = allItems.find(i => i.id === parentItemId);
   if (!item) return [];
-
-  // try matching by pos_id first, fall back to id
   const extraPosIds = itemExtrasMap[item.pos_id] || itemExtrasMap[item.id] || [];
-  return extraPosIds
-    .map(pid => allItems.find(i => i.pos_id === pid || i.id === pid))
-    .filter(Boolean);
+  return extraPosIds.map(pid => allItems.find(i => i.pos_id === pid || i.id === pid)).filter(Boolean);
 }
 
 function toggleExtra(parentItemId, extraItemJson, checkbox) {
-  const cartItem = cart[parentItemId];
-  if (!cartItem) return;
-
+  const cartItem = cart[parentItemId]; if (!cartItem) return;
   let extraItem;
-  try {
-    extraItem = typeof extraItemJson === 'string'
-      ? JSON.parse(extraItemJson)
-      : extraItemJson;
-  } catch(e) { return; }
-
-  if (checkbox.checked) {
-    const existing = cartItem.extras.find(e => e.item.id === extraItem.id);
-    if (!existing) cartItem.extras.push({ item: extraItem, qty: 1 });
-  } else {
-    cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItem.id);
-  }
-
-  updateCartBadge();
-  renderDrawer();
+  try { extraItem = typeof extraItemJson === 'string' ? JSON.parse(extraItemJson) : extraItemJson; } catch(e) { return; }
+  if (checkbox.checked) { if (!cartItem.extras.find(e => e.item.id === extraItem.id)) cartItem.extras.push({ item: extraItem, qty: 1 }); }
+  else cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItem.id);
+  updateCartBadge(); renderDrawer();
 }
 
 function updateExtraQty(parentItemId, extraItemId, delta) {
-  const cartItem = cart[parentItemId];
-  if (!cartItem) return;
-
-  const extra = cartItem.extras.find(e => e.item.id === extraItemId);
-  if (!extra) return;
-
+  const cartItem = cart[parentItemId]; if (!cartItem) return;
+  const extra = cartItem.extras.find(e => e.item.id === extraItemId); if (!extra) return;
   extra.qty += delta;
-  if (extra.qty <= 0)
-    cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItemId);
-
-  updateCartBadge();
-  renderDrawer();
+  if (extra.qty <= 0) cartItem.extras = cartItem.extras.filter(e => e.item.id !== extraItemId);
+  updateCartBadge(); renderDrawer();
 }
 
 function renderExtrasSection(item) {
   const extras = getAvailableExtras(item.id);
   if (extras.length === 0) return '';
-
-  let html = '<div class="extras-section">';
-  html += '<div class="extras-title">➕ Add Extras</div>';
-
+  let html = '<div class="extras-section"><div class="extras-title">➕ Add Extras</div>';
   extras.forEach(extra => {
-    const cartItem    = cart[item.id];
-    const selectedEx  = cartItem ? cartItem.extras.find(e => e.item.id === extra.id) : null;
-    const isSelected  = !!selectedEx;
-    const qty         = selectedEx ? selectedEx.qty : 0;
-
-    // Safely encode extra object for inline onclick
-    const extraJson = escAttr(JSON.stringify(extra));
-
-    html += `
-      <div class="extra-option ${isSelected ? 'selected' : ''}"
-           onclick="handleExtraClick(event, ${item.id}, '${extraJson}')">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <input type="checkbox" class="extra-checkbox" ${isSelected ? 'checked' : ''}
-                 onclick="event.stopPropagation(); handleExtraCheck(event, ${item.id}, '${extraJson}', this)">
-          <span class="extra-option-name">${escHtml(extra.name)}</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span class="extra-option-price">+$${parseFloat(extra.price_usd).toFixed(2)}</span>
-          ${isSelected ? `
-            <div class="qty-controls" style="gap:6px;" onclick="event.stopPropagation()">
-              <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;"
-                      onclick="updateExtraQty(${item.id}, ${extra.id}, -1)">−</button>
-              <span class="qty-num" style="font-size:.85rem;">${qty}</span>
-              <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;"
-                      onclick="updateExtraQty(${item.id}, ${extra.id}, 1)">+</button>
-            </div>` : ''}
-        </div>
-      </div>`;
+    const cartItem   = cart[item.id];
+    const selectedEx = cartItem ? cartItem.extras.find(e => e.item.id === extra.id) : null;
+    const isSelected = !!selectedEx;
+    const qty        = selectedEx ? selectedEx.qty : 0;
+    const extraJson  = escAttr(JSON.stringify(extra));
+    html += `<div class="extra-option ${isSelected?'selected':''}" onclick="handleExtraClick(event,${item.id},'${extraJson}')">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" class="extra-checkbox" ${isSelected?'checked':''} onclick="event.stopPropagation();handleExtraCheck(event,${item.id},'${extraJson}',this)">
+        <span class="extra-option-name">${escHtml(extra.name)}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="extra-option-price">+$${parseFloat(extra.price_usd).toFixed(2)}</span>
+        ${isSelected?`<div class="qty-controls" style="gap:6px;" onclick="event.stopPropagation()">
+          <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;" onclick="updateExtraQty(${item.id},${extra.id},-1)">−</button>
+          <span class="qty-num" style="font-size:.85rem;">${qty}</span>
+          <button class="qty-btn" style="width:24px;height:24px;font-size:.9rem;" onclick="updateExtraQty(${item.id},${extra.id},1)">+</button>
+        </div>`:''}
+      </div>
+    </div>`;
   });
-
   html += '</div>';
   return html;
 }
 
 function handleExtraClick(event, parentItemId, extraJson) {
-  // Clicked the row — toggle the checkbox
   const checkbox = event.currentTarget.querySelector('.extra-checkbox');
   if (!checkbox || event.target === checkbox) return;
   checkbox.checked = !checkbox.checked;
   toggleExtra(parentItemId, extraJson, checkbox);
 }
-
 function handleExtraCheck(event, parentItemId, extraJson, checkbox) {
-  event.stopPropagation();
-  toggleExtra(parentItemId, extraJson, checkbox);
+  event.stopPropagation(); toggleExtra(parentItemId, extraJson, checkbox);
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  DRAWER / CART RENDERING
-// ═══════════════════════════════════════════════════════════════
 function renderDrawer() {
   const body  = document.getElementById('drawerBody');
   const items = Object.values(cart);
-
   if (items.length === 0) {
-    body.innerHTML =
-      '<div class="empty-cart">' +
-      '<div class="e-icon">🛒</div><p>Your cart is empty.<br>Add some items!</p></div>';
+    body.innerHTML = '<div class="empty-cart"><div class="e-icon">🛒</div><p>Your cart is empty.<br>Add some items!</p></div>';
     document.getElementById('drawerTotal').textContent = '$0.00';
     return;
   }
-
   body.innerHTML = '';
   let total = 0;
-
   items.forEach(entry => {
     const { item, qty, note, extras } = entry;
     const itemTotal   = item.price_usd * qty;
-    const extrasTotal = extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0);
+    const extrasTotal = extras.reduce((s,ex) => s+(ex.item.price_usd*ex.qty),0);
     const lineTotal   = itemTotal + extrasTotal;
     total += lineTotal;
-
     const div = document.createElement('div');
     div.className = 'cart-item';
     div.innerHTML =
-      '<div class="cart-item-info">' +
-        '<div class="cart-item-name">' + escHtml(item.name) + '</div>' +
-        '<div class="cart-item-price">$' + lineTotal.toFixed(2) +
-          (qty > 1 || extras.length > 0
-            ? ' <span style="color:#aaa;font-size:.75rem">(' +
-              (qty > 1 ? '×' + qty : '') +
-              (extras.length > 0
-                ? (qty > 1 ? ' + ' : '') + extras.length + ' extra' + (extras.length > 1 ? 's' : '')
-                : '') +
-              ')</span>'
-            : '') +
-        '</div>' +
-        (extras.length > 0
-          ? '<div style="font-size:.75rem;color:var(--muted);margin-top:2px;">' +
-            extras.map(ex =>
-              '• ' + escHtml(ex.item.name) + (ex.qty > 1 ? ' ×' + ex.qty : '')
-            ).join('<br>') +
-            '</div>'
-          : '') +
-        '<textarea class="note-input" rows="1" placeholder="Note for this item (optional)"' +
-          ' onchange="updateItemNote(' + item.id + ', this.value)"' +
-          ' oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\'">' +
-          escHtml(note) + '</textarea>' +
-        renderExtrasSection(item) +
-      '</div>' +
-      '<div class="qty-controls">' +
-        '<button class="qty-btn" onclick="changeQty(' + item.id + ',-1)">−</button>' +
-        '<span class="qty-num">' + qty + '</span>' +
-        '<button class="qty-btn" onclick="changeQty(' + item.id + ',1)">+</button>' +
+      '<div class="cart-item-info">'+
+        '<div class="cart-item-name">'+escHtml(item.name)+'</div>'+
+        '<div class="cart-item-price">$'+lineTotal.toFixed(2)+
+          (qty>1||extras.length>0?' <span style="color:#aaa;font-size:.75rem">('+
+            (qty>1?'×'+qty:'')+
+            (extras.length>0?(qty>1?' + ':'')+extras.length+' extra'+(extras.length>1?'s':''):'')+
+          ')</span>':'')+
+        '</div>'+
+        (extras.length>0?'<div style="font-size:.75rem;color:var(--muted);margin-top:2px;">'+
+          extras.map(ex=>'• '+escHtml(ex.item.name)+(ex.qty>1?' ×'+ex.qty:'')).join('<br>')+
+          '</div>':'')+
+        '<textarea class="note-input" rows="1" placeholder="Note for this item (optional)"'+
+          ' onchange="updateItemNote('+item.id+',this.value)"'+
+          ' oninput="this.style.height=\'auto\';this.style.height=this.scrollHeight+\'px\'">'+
+          escHtml(note)+'</textarea>'+
+        renderExtrasSection(item)+
+      '</div>'+
+      '<div class="qty-controls">'+
+        '<button class="qty-btn" onclick="changeQty('+item.id+',-1)">−</button>'+
+        '<span class="qty-num">'+qty+'</span>'+
+        '<button class="qty-btn" onclick="changeQty('+item.id+',1)">+</button>'+
       '</div>';
     body.appendChild(div);
   });
-
   document.getElementById('drawerTotal').textContent = '$' + total.toFixed(2);
 }
 
 function changeQty(itemId, delta) {
   if (!cart[itemId]) return;
   cart[itemId].qty += delta;
-  if (cart[itemId].qty <= 0) {
-    delete cart[itemId];
-    refreshCard(itemId);
-  }
-  updateCartBadge();
-  renderDrawer();
-  refreshCard(itemId);
+  if (cart[itemId].qty <= 0) { delete cart[itemId]; refreshCard(itemId); }
+  updateCartBadge(); renderDrawer(); refreshCard(itemId);
 }
-
-function updateItemNote(itemId, val) {
-  if (cart[itemId]) cart[itemId].note = val;
-}
+function updateItemNote(itemId, val) { if (cart[itemId]) cart[itemId].note = val; }
 
 // ═══════════════════════════════════════════════════════════════
-//  TABLE CONFLICT MODAL
+//  SHARED VALIDATION
 // ═══════════════════════════════════════════════════════════════
-function showTableConflictModal() {
-  const modal      = document.getElementById('tableModal');
-  const list       = document.getElementById('tableList');
-  const confirmBtn = document.getElementById('confirmTableBtn');
-
-  list.innerHTML = '';
-  confirmBtn.disabled = true;
-  pendingTableChange = null;
-
-  const freeTables = availableTables.filter(t => !t.occupied && !t.isCurrent);
-
-  if (freeTables.length === 0) {
-    list.innerHTML =
-      '<p style="color:var(--red);text-align:center;">No available tables. Please ask staff.</p>';
-  } else {
-    freeTables.forEach(t => {
-      const div = document.createElement('div');
-      div.className = 'table-option';
-      div.innerHTML = '<span>' + escHtml(t.name) + '</span><span>🪑 Free</span>';
-      div.onclick = () => selectTableOption(div, t);
-      list.appendChild(div);
-    });
-  }
-
-  modal.classList.add('show');
-}
-
-function selectTableOption(element, table) {
-  document.querySelectorAll('.table-option').forEach(el => el.classList.remove('selected'));
-  element.classList.add('selected');
-  pendingTableChange = table;
-  document.getElementById('confirmTableBtn').disabled = false;
-}
-
-function closeTableModal() {
-  document.getElementById('tableModal').classList.remove('show');
-  pendingTableChange = null;
-}
-
-function confirmTableChange() {
-  if (!pendingTableChange) return;
-  tableId  = pendingTableChange.id;
-  tableNum = pendingTableChange.name.replace('Table ', '');
-  document.getElementById('tableBadge').textContent = 'Table ' + tableNum;
-  closeTableModal();
-  submitOrder();
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  SUBMIT ORDER → POS (sends to Supabase → polled by C# app)
-// ═══════════════════════════════════════════════════════════════
-async function submitOrder() {
+function validateCartCommon() {
   const name  = document.getElementById('customerName').value.trim();
   const items = Object.values(cart);
-  const btn   = document.getElementById('submitBtn');
-
-  if (btn.disabled || btn.classList.contains('loading')) return;
-
-  if (!name) {
-    alert('Please enter your name first.');
-    document.getElementById('customerName').focus();
-    closeCart();
-    return;
-  }
-  if (items.length === 0) {
-    alert('Your cart is empty!');
-    return;
-  }
-
-  const currentTable = availableTables.find(t => t.id === tableId);
-  if (currentTable && currentTable.occupied && !currentTable.isCurrent) {
-    showTableConflictModal();
-    return;
-  }
-
-  btn.disabled = true;
-  btn.classList.add('loading');
-  btn.textContent = 'Sending...';
-
-  const orderNote = document.getElementById('orderNote').value.trim();
-
-  const payload = {
-    table_number:  tableNum || 'Walk-in',
-    table_id:      tableId  || null,
-    customer_name: name,
-    order_note:    orderNote || null,
-    status:        'pending',
-    items: items.map(e => ({
-      item_id:   e.item.id,
-      item_name: e.item.name,
-      price_usd: e.item.price_usd,
-      quantity:  e.qty,
-      note:      e.note || null,
-      extras:    e.extras.map(ex => ({
-        item_id:   ex.item.id,
-        item_name: ex.item.name,
-        price_usd: ex.item.price_usd,
-        quantity:  ex.qty
-      }))
-    })),
-    total_usd: items.reduce(
-      (s, e) => s + (e.item.price_usd * e.qty) +
-        e.extras.reduce((es, ex) => es + (ex.item.price_usd * ex.qty), 0),
-      0
-    ),
-    created_at: new Date().toISOString(),
-    expires_at: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
-  };
-
-  try {
-    const res = await fetch(
-      CONFIG.SUPABASE_URL + '/rest/v1/online_order_requests',
-      {
-        method:  'POST',
-        headers: { ...sbHeaders(), 'Prefer': 'return=minimal' },
-        body:    JSON.stringify(payload)
-      }
-    );
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error('Server error: ' + res.status + ' — ' + errorText);
-    }
-
-    closeCart();
-    buildSuccessScreen(items);
-    showSuccessScreen();
-
-    cart = {};
-    updateCartBadge();
-    renderMenu();
-    document.getElementById('orderNote').value = '';
-
-  } catch(e) {
-    alert('Could not send order: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.classList.remove('loading');
-    btn.textContent = '🍽️ Order via App';
-  }
+  if (!name)          { alert('Please enter your name first.'); document.getElementById('customerName').focus(); closeCart(); return false; }
+  if (items.length === 0) { alert('Your cart is empty!'); return false; }
+  return true;
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  WHATSAPP ORDER — uses full cart WITH extras, inside drawer
+//  SUBMIT ORDER → online_order_requests (POS app picks it up)
+// ═══════════════════════════════════════════════════════════════
+async function submitOrder() {
+  if (!validateCartCommon()) return;
+  const btn = document.getElementById('submitBtn');
+  if (btn.disabled) return;
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const name      = document.getElementById('customerName').value.trim();
+    const orderNote = document.getElementById('orderNote').value.trim();
+    const items     = Object.values(cart);
+    const payload = {
+      table_number:  tableNum || 'Walk-in',
+      table_id:      tableId  || null,
+      customer_name: name,
+      order_note:    orderNote || null,
+      status:        'pending',
+      items: items.map(e => ({
+        item_id: e.item.id, item_name: e.item.name, price_usd: e.item.price_usd,
+        quantity: e.qty, note: e.note || null,
+        extras: e.extras.map(ex => ({ item_id: ex.item.id, item_name: ex.item.name, price_usd: ex.item.price_usd, quantity: ex.qty }))
+      })),
+      total_usd: items.reduce((s,e) => s+(e.item.price_usd*e.qty)+e.extras.reduce((es,ex) => es+ex.item.price_usd*ex.qty,0),0),
+      created_at: new Date().toISOString(),
+      expires_at: new Date(Date.now()+2*60*60*1000).toISOString()
+    };
+    const res = await fetch(CONFIG.SUPABASE_URL+'/rest/v1/online_order_requests', {
+      method: 'POST', headers: sbHeaders({'Prefer':'return=minimal'}), body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Server error '+res.status+' — '+await res.text());
+    closeCart();
+    showSuccess(Object.values(cart), 'Order Sent!', 'Your request has been sent to the cashier.<br>A staff member will assist you shortly.');
+    resetCart();
+  } catch(e) { alert('Could not send order: '+e.message); }
+  finally { btn.disabled = false; btn.textContent = '🍽️ Order via App'; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  WHATSAPP
 // ═══════════════════════════════════════════════════════════════
 function orderByWhatsApp() {
+  if (!validateCartCommon()) return;
+  if (!CONFIG.PHONE_NUMBER) { alert('WhatsApp ordering is not configured.\nPlease ask a staff member.'); return; }
   const name      = document.getElementById('customerName').value.trim();
-  const items     = Object.values(cart);
   const orderNote = document.getElementById('orderNote').value.trim();
-
-  if (!name) {
-    alert('Please enter your name first.');
-    document.getElementById('customerName').focus();
-    closeCart();
-    return;
-  }
-  if (items.length === 0) {
-    alert('Your cart is empty! Add some items first.');
-    return;
-  }
-  if (!CONFIG.PHONE_NUMBER) {
-    alert('WhatsApp ordering is not configured yet.\nPlease ask a staff member for assistance.');
-    return;
-  }
-
-  // Build a rich WhatsApp message including extras
-  let message = `*New Order — ${CONFIG.STORE_NAME}* 📱\n\n`;
-  message += `*Customer:* ${name}\n`;
-  message += `*Table:* ${tableNum || 'Walk-in'}\n`;
-  message += `${'─'.repeat(28)}\n\n`;
-
+  const items     = Object.values(cart);
+  let msg = `*New Order — ${CONFIG.STORE_NAME}* 📱\n\n*Customer:* ${name}\n*Table:* ${tableNum||'Walk-in'}\n${'─'.repeat(28)}\n\n`;
   let total = 0;
-  items.forEach((e, idx) => {
-    const itemTotal   = e.item.price_usd * e.qty;
-    const extrasTotal = e.extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0);
-    const lineTotal   = itemTotal + extrasTotal;
+  items.forEach((e,idx) => {
+    const itemTotal = e.item.price_usd*e.qty;
+    const lineTotal = itemTotal + e.extras.reduce((s,ex) => s+ex.item.price_usd*ex.qty,0);
     total += lineTotal;
-
-    message += `*${idx + 1}. ${e.item.name}* ×${e.qty}`;
-    message += `   — $${itemTotal.toFixed(2)}\n`;
-
-    if (e.note) {
-      message += `   _Note: ${e.note}_\n`;
-    }
-
-    if (e.extras.length > 0) {
-      e.extras.forEach(ex => {
-        const exTotal = ex.item.price_usd * ex.qty;
-        message += `   ➕ ${ex.item.name}`;
-        if (ex.qty > 1) message += ` ×${ex.qty}`;
-        message += ` — $${exTotal.toFixed(2)}\n`;
-      });
-    }
-
-    message += '\n';
+    msg += `*${idx+1}. ${e.item.name}* ×${e.qty}   — $${itemTotal.toFixed(2)}\n`;
+    if (e.note) msg += `   _Note: ${e.note}_\n`;
+    e.extras.forEach(ex => { msg += `   ➕ ${ex.item.name}${ex.qty>1?' ×'+ex.qty:''} — $${(ex.item.price_usd*ex.qty).toFixed(2)}\n`; });
+    msg += '\n';
   });
-
-  if (orderNote) {
-    message += `*Order Note:* ${orderNote}\n\n`;
-  }
-
-  message += `${'─'.repeat(28)}\n`;
-  message += `*TOTAL: $${total.toFixed(2)}*\n\n`;
-  message += `_Sent via ${CONFIG.STORE_NAME} Online Menu_`;
-
-  const cleanPhone    = CONFIG.PHONE_NUMBER.replace(/[^0-9]/g, '');
-  const encodedMsg    = encodeURIComponent(message);
-  const whatsappUrl   = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
-  window.open(whatsappUrl, '_blank');
+  if (orderNote) msg += `*Order Note:* ${orderNote}\n\n`;
+  msg += `${'─'.repeat(28)}\n*TOTAL: $${total.toFixed(2)}*\n\n_Sent via ${CONFIG.STORE_NAME} Online Menu_`;
+  window.open('https://wa.me/'+CONFIG.PHONE_NUMBER.replace(/[^0-9]/g,'')+'?text='+encodeURIComponent(msg),'_blank');
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SUCCESS SCREEN HELPERS
+//  STAFF: TABLE PICKER
 // ═══════════════════════════════════════════════════════════════
-function buildSuccessScreen(items) {
+async function openTablePicker() {
+  if (!staffLoggedIn) { openLogin(); return; }
+  if (!validateCartCommon()) return;
+
+  // Reset picker state
+  pickedTableId   = null;
+  pickedTableName = '';
+  document.getElementById('confirmTableBtn').disabled = true;
+  document.getElementById('tablePickerErr').classList.remove('show');
+  document.getElementById('tableGrid').innerHTML = '<p style="color:var(--muted);font-size:.9rem">Loading tables…</p>';
+  document.getElementById('tablePickerModal').classList.add('show');
+
+  try {
+    // Load all active tables from Supabase
+    // NOTE: RestaurantTables must be added to Supabase schema or use a view.
+    // If not available in Supabase, fall back to a static list approach.
+    const tabRes = await fetch(
+      CONFIG.SUPABASE_URL+'/rest/v1/RestaurantTables?IsActive=eq.true&select=TableID,TableName&order=SortOrder',
+      { headers: sbHeaders() }
+    );
+
+    let tables = [];
+    if (tabRes.ok) {
+      const raw = await tabRes.json();
+      tables = raw.map(t => ({ id: t.TableID, name: t.TableName }));
+    } else {
+      throw new Error('Could not load tables. Make sure RestaurantTables is exposed in Supabase.');
+    }
+
+    // Get tables with active pending online orders (as proxy for occupation on website)
+    const ordRes = await fetch(
+      CONFIG.SUPABASE_URL+'/rest/v1/online_order_requests?status=in.(pending,accepted)&select=table_id',
+      { headers: sbHeaders() }
+    );
+    const openOrders = ordRes.ok ? await ordRes.json() : [];
+    const occupiedIds = new Set(openOrders.map(o => o.table_id).filter(Boolean));
+
+    availableTables = tables.map(t => ({
+      id:         t.id,
+      name:       t.name,
+      isOccupied: occupiedIds.has(t.id)
+    }));
+
+    // Default selection = table from QR link (if not occupied)
+    if (tableId > 0) {
+      const def = availableTables.find(t => t.id === tableId);
+      if (def && !def.isOccupied) {
+        pickedTableId   = def.id;
+        pickedTableName = def.name;
+        document.getElementById('confirmTableBtn').disabled = false;
+      }
+    }
+
+    renderTableGrid();
+
+  } catch(e) {
+    document.getElementById('tablePickerErr').textContent = 'Error loading tables: ' + e.message;
+    document.getElementById('tablePickerErr').classList.add('show');
+    document.getElementById('tableGrid').innerHTML = '';
+  }
+}
+
+function renderTableGrid() {
+  const grid = document.getElementById('tableGrid');
+  grid.innerHTML = '';
+
+  if (availableTables.length === 0) {
+    grid.innerHTML = '<p style="color:var(--muted);font-size:.9rem;grid-column:1/-1;">No tables found.</p>';
+    return;
+  }
+
+  availableTables.forEach(t => {
+    const tile = document.createElement('div');
+    const isBar = t.name.toLowerCase().startsWith('bar');
+    tile.className = 'table-tile' +
+      (t.isOccupied  ? ' occupied' : '') +
+      (t.id === pickedTableId ? ' selected' : '');
+
+    tile.innerHTML =
+      '<div class="t-icon">'+(isBar?'🍸':'🪑')+'</div>'+
+      '<div class="t-name">'+escHtml(t.name)+'</div>'+
+      '<div class="t-status">'+(t.isOccupied?'⚠ Has Order':'✓ Free')+'</div>';
+
+    if (!t.isOccupied) {
+      tile.onclick = () => {
+        pickedTableId   = t.id;
+        pickedTableName = t.name;
+        document.querySelectorAll('.table-tile').forEach(el => el.classList.remove('selected'));
+        tile.classList.add('selected');
+        document.getElementById('confirmTableBtn').disabled = false;
+        document.getElementById('tablePickerErr').classList.remove('show');
+      };
+    } else {
+      tile.title = 'This table already has an active order. Please choose another table.';
+    }
+    grid.appendChild(tile);
+  });
+}
+
+function closeTablePicker() {
+  document.getElementById('tablePickerModal').classList.remove('show');
+  // Do NOT clear cart — cart is preserved
+  pickedTableId   = null;
+  pickedTableName = '';
+}
+
+async function confirmCreateOrder() {
+  if (!pickedTableId) {
+    document.getElementById('tablePickerErr').textContent = 'Please select a table first.';
+    document.getElementById('tablePickerErr').classList.add('show');
+    return;
+  }
+
+  // Re-validate chosen table is not occupied
+  const chosen = availableTables.find(t => t.id === pickedTableId);
+  if (chosen && chosen.isOccupied) {
+    document.getElementById('tablePickerErr').textContent =
+      '⚠ ' + pickedTableName + ' already has an active order. Please choose a different table.';
+    document.getElementById('tablePickerErr').classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('confirmTableBtn');
+  btn.disabled    = true;
+  btn.textContent = 'Creating…';
+
+  try {
+    const name      = document.getElementById('customerName').value.trim();
+    const orderNote = document.getElementById('orderNote').value.trim();
+    const cartItems = Object.values(cart);
+
+    // Post to online_order_requests — same table as "Order via App"
+    // but the table is what staff explicitly chose.
+    // The C# POS cashier sees it as a normal pending card and accepts it,
+    // which creates the real SQL Server order with all items+extras+notes.
+    const payload = {
+      table_number:  pickedTableName,
+      table_id:      pickedTableId,
+      customer_name: name,
+      order_note:    orderNote || null,
+      status:        'pending',
+      items: cartItems.map(e => ({
+        item_id:   e.item.id,
+        item_name: e.item.name,
+        price_usd: e.item.price_usd,
+        quantity:  e.qty,
+        note:      e.note || null,
+        extras: e.extras.map(ex => ({
+          item_id:   ex.item.id,
+          item_name: ex.item.name,
+          price_usd: ex.item.price_usd,
+          quantity:  ex.qty
+        }))
+      })),
+      total_usd: cartItems.reduce((s,e) =>
+        s + (e.item.price_usd*e.qty) + e.extras.reduce((es,ex) => es+ex.item.price_usd*ex.qty,0), 0),
+      created_at: new Date().toISOString(),
+      expires_at: new Date(Date.now()+2*60*60*1000).toISOString()
+    };
+
+    const res = await fetch(CONFIG.SUPABASE_URL+'/rest/v1/online_order_requests', {
+      method:  'POST',
+      headers: sbHeaders({'Prefer':'return=minimal'}),
+      body:    JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error('Server error '+res.status+': '+await res.text());
+
+    // Success — close picker and drawer, show confirmation
+    const snapshotCart = Object.values(cart);
+    closeTablePicker();
+    closeCart();
+    showSuccess(
+      snapshotCart,
+      '⚡ Order Created!',
+      'Order for <strong>'+escHtml(pickedTableName)+'</strong> has been sent to the POS.<br>The cashier will confirm it momentarily.'
+    );
+    resetCart();
+
+  } catch(e) {
+    document.getElementById('tablePickerErr').textContent = 'Failed to create order: '+e.message;
+    document.getElementById('tablePickerErr').classList.add('show');
+    btn.disabled    = false;
+    btn.textContent = 'Create Order';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SUCCESS SCREEN
+// ═══════════════════════════════════════════════════════════════
+function showSuccess(items, title, desc) {
+  document.getElementById('successTitle').textContent = title;
+  document.getElementById('successDesc').innerHTML    = desc;
   const ul = document.getElementById('successItems');
   ul.innerHTML = items.map(e => {
-    let html = '<li>' + escHtml(e.item.name) + ' ×' + e.qty;
-    if (e.note)
-      html += ' <span style="color:#888;font-size:.78rem">— ' + escHtml(e.note) + '</span>';
-    if (e.extras.length > 0) {
+    let html = '<li>'+escHtml(e.item.name)+' ×'+e.qty;
+    if (e.note) html += ' <span style="color:#888;font-size:.78rem">— '+escHtml(e.note)+'</span>';
+    if (e.extras.length>0) {
       html += '<div style="margin-left:12px;font-size:.78rem;color:#666;">';
-      e.extras.forEach(ex => {
-        html += '+ ' + escHtml(ex.item.name) + (ex.qty > 1 ? ' ×' + ex.qty : '') + '<br>';
-      });
+      e.extras.forEach(ex => { html += '+ '+escHtml(ex.item.name)+(ex.qty>1?' ×'+ex.qty:'')+'<br>'; });
       html += '</div>';
     }
-    const lineTotal = (e.item.price_usd * e.qty) +
-      e.extras.reduce((s, ex) => s + (ex.item.price_usd * ex.qty), 0);
-    html += ' <span style="float:right;font-weight:700;color:#1b5e20">$' +
-      lineTotal.toFixed(2) + '</span></li>';
+    const lineTotal = (e.item.price_usd*e.qty)+e.extras.reduce((s,ex)=>s+ex.item.price_usd*ex.qty,0);
+    html += ' <span style="float:right;font-weight:700;color:#1b5e20">$'+lineTotal.toFixed(2)+'</span></li>';
     return html;
   }).join('');
-}
-
-function showSuccessScreen() {
   document.getElementById('successScreen').classList.add('show');
   let sec = 10;
   const cd = setInterval(() => {
     sec--;
     document.getElementById('successCountdown').textContent = sec;
-    if (sec <= 0) {
+    if (sec<=0) {
       clearInterval(cd);
       document.getElementById('successScreen').classList.remove('show');
       document.getElementById('customerName').value = '';
@@ -1409,23 +1032,21 @@ function showSuccessScreen() {
   }, 1000);
 }
 
+function resetCart() {
+  cart = {};
+  updateCartBadge();
+  renderMenu();
+  document.getElementById('orderNote').value = '';
+}
+
 // ═══════════════════════════════════════════════════════════════
 //  UTILS
 // ═══════════════════════════════════════════════════════════════
 function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
-// Escapes a string for use inside an HTML attribute (single-quoted)
 function escAttr(str) {
-  return String(str)
-    .replace(/\\/g, '\\\\')
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '&quot;');
+  return String(str).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
 }
 </script>
 </body>
