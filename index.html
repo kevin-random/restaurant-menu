@@ -410,60 +410,7 @@ function closeLogin() {
   document.getElementById('loginPass').value = '';
 }
 
-async function doLogin() {
-  const username = document.getElementById('loginUser').value.trim();
-  const password = document.getElementById('loginPass').value;
-  const errEl    = document.getElementById('loginErr');
-  const btn      = document.getElementById('loginBtn');
-
-  errEl.classList.remove('show');
-  if (!username || !password) {
-    errEl.textContent = 'Please enter username and password.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  btn.disabled    = true;
-  btn.textContent = 'Signing in…';
-
-  try {
-    const hash = await sha256(password);
-
-    // Query restaurant_users_cache (synced from RestaurantUsers by C# app)
-    const url = CONFIG.SUPABASE_URL + '/rest/v1/restaurant_users_cache' +
-      '?username=eq.' + encodeURIComponent(username) +
-      '&password_hash=eq.' + encodeURIComponent(hash) +
-      '&is_active=eq.true' +
-      '&select=user_id,full_name';
-
-    const res = await fetch(url, { headers: sbHeaders() });
-    if (!res.ok) throw new Error('Server error ' + res.status);
-    const rows = await res.json();
-
-    if (!rows || rows.length === 0) {
-      errEl.textContent = 'Invalid username or password.';
-      errEl.classList.add('show');
-      return;
-    }
-
-    staffLoggedIn = true;
-    staffUsername = rows[0].full_name || username;
-    staffUserId   = rows[0].user_id;
-
-    document.getElementById('staffName').textContent = staffUsername;
-    document.getElementById('staffBadge').classList.add('show');
-    document.getElementById('staffLoginBtn').classList.add('hidden');
-    document.getElementById('createOrderBtn').classList.add('staff-visible');
-
-    // Pre-fill name if empty
-    const nameEl = document.getElementById('customerName');
-    if (!nameEl.value.trim()) nameEl.value = staffUsername;
-
-    closeLogin();
-  } catch(e) {
-    errEl.textContent = 'Login error: ' + e.message;
-    errEl.classList.add('show');
-  } finally {
+} finally {
     btn.disabled    = false;
     btn.textContent = 'Sign In';
   }
@@ -973,11 +920,13 @@ async function confirmCreateOrder() {
     const cartItems = Object.values(cart);
 
     const payload = {
-      table_number:  pickedTableName,
-      table_id:      pickedTableId,
-      customer_name: name,
-      order_note:    orderNote || null,
-      status:        'pending',
+      table_number:   pickedTableName,
+      table_id:       pickedTableId,
+      customer_name:  name,
+      order_note:     orderNote || null,
+      status:         'staff_direct',   // C# poller sees this and auto-creates without pending card
+      staff_user_id:  staffUserId,      // WaiterUserID — the logged-in staff member
+      staff_username: staffUsername,    // for the order note / audit trail
       items: cartItems.map(e => ({
         item_id:   e.item.id,
         item_name: e.item.name,
@@ -1011,7 +960,7 @@ async function confirmCreateOrder() {
     showSuccess(
       snapshotCart,
       '⚡ Order Created!',
-      'Order for <strong>'+escHtml(pickedTableName)+'</strong> has been sent to the POS.<br>The cashier will confirm it momentarily.'
+      'Order for <strong>'+escHtml(pickedTableName)+'</strong> has been created directly.<br>It will appear in the POS tables within seconds.'
     );
     resetCart();
 
