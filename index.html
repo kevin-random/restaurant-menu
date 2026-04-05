@@ -330,9 +330,11 @@ const CONFIG = {
 
 function sbHeaders(extra) {
   return Object.assign({
-    'apikey':        CONFIG.SUPABASE_ANON,
-    'Authorization': 'Bearer ' + CONFIG.SUPABASE_ANON,
-    'Content-Type':  'application/json',
+    'apikey':           CONFIG.SUPABASE_ANON,
+    'Authorization':    'Bearer ' + CONFIG.SUPABASE_ANON,
+    'Content-Type':     'application/json',
+    'Accept':           'application/json',
+    'Accept-Profile':   'public',
   }, extra || {});
 }
 
@@ -410,7 +412,87 @@ function closeLogin() {
   document.getElementById('loginPass').value = '';
 }
 
-} finally {
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl    = document.getElementById('loginErr');
+  const btn      = document.getElementById('loginBtn');
+
+  errEl.classList.remove('show');
+  if (!username || !password) {
+    errEl.textContent = 'Please enter username and password.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.disabled    = true;
+  btn.textContent = 'Signing in…';
+
+  try {
+    const hash = await sha256(password);
+
+    // Try restaurant_users_cache first (synced from C# app via OnlineMenuSync)
+    let rows = null;
+    let loginErr = '';
+
+    const cacheUrl = CONFIG.SUPABASE_URL + '/rest/v1/restaurant_users_cache' +
+      '?username=eq.' + encodeURIComponent(username) +
+      '&password_hash=eq.' + encodeURIComponent(hash) +
+      '&is_active=eq.true' +
+      '&select=user_id,full_name';
+
+    const cacheRes = await fetch(cacheUrl, { headers: sbHeaders() });
+    if (cacheRes.ok) {
+      const cacheRows = await cacheRes.json();
+      if (Array.isArray(cacheRows) && cacheRows.length > 0) {
+        rows = cacheRows.map(r => ({ user_id: r.user_id, full_name: r.full_name }));
+      }
+    } else {
+      loginErr = 'cache ' + cacheRes.status;
+    }
+
+    // Fallback: query RestaurantUsers directly (PascalCase Supabase table)
+    if (!rows) {
+      const directUrl = CONFIG.SUPABASE_URL + '/rest/v1/RestaurantUsers' +
+        '?Username=eq.' + encodeURIComponent(username) +
+        '&PasswordHash=eq.' + encodeURIComponent(hash) +
+        '&IsActive=eq.true' +
+        '&select=UserID,FullName';
+      const directRes = await fetch(directUrl, { headers: sbHeaders() });
+      if (directRes.ok) {
+        const directRows = await directRes.json();
+        if (Array.isArray(directRows) && directRows.length > 0) {
+          rows = directRows.map(r => ({ user_id: r.UserID, full_name: r.FullName }));
+        }
+      } else {
+        loginErr += (loginErr ? ', ' : '') + 'direct ' + directRes.status;
+      }
+    }
+
+    if (!rows || rows.length === 0) {
+      errEl.textContent = 'Invalid username or password.' + (loginErr ? ' (Debug: ' + loginErr + ')' : '');
+      errEl.classList.add('show');
+      return;
+    }
+
+    staffLoggedIn = true;
+    staffUsername = rows[0].full_name || username;
+    staffUserId   = rows[0].user_id;
+
+    document.getElementById('staffName').textContent = staffUsername;
+    document.getElementById('staffBadge').classList.add('show');
+    document.getElementById('staffLoginBtn').classList.add('hidden');
+    document.getElementById('createOrderBtn').classList.add('staff-visible');
+
+    const nameEl = document.getElementById('customerName');
+    if (!nameEl.value.trim()) nameEl.value = staffUsername;
+
+    closeLogin();
+
+  } catch(e) {
+    errEl.textContent = 'Login error: ' + e.message;
+    errEl.classList.add('show');
+  } finally {
     btn.disabled    = false;
     btn.textContent = 'Sign In';
   }
@@ -437,16 +519,29 @@ async function sha256(str) {
 //  MENU LOAD
 // ═══════════════════════════════════════════════════════════════
 async function loadMenu() {
+  const errEl = document.getElementById('menuContent');
   try {
     const catRes = await fetch(
       CONFIG.SUPABASE_URL + '/rest/v1/menu_categories?is_active=eq.true&order=sort_order',
       { headers: sbHeaders() });
+
+    if (!catRes.ok) {
+      const t = await catRes.text();
+      throw new Error('Categories HTTP ' + catRes.status + ': ' + t.substring(0,200));
+    }
     const categories = await catRes.json();
+    if (!Array.isArray(categories)) throw new Error('Categories not array: ' + JSON.stringify(categories).substring(0,200));
 
     const itemRes = await fetch(
       CONFIG.SUPABASE_URL + '/rest/v1/menu_items?is_active=eq.true&order=sort_order',
       { headers: sbHeaders() });
+
+    if (!itemRes.ok) {
+      const t = await itemRes.text();
+      throw new Error('Items HTTP ' + itemRes.status + ': ' + t.substring(0,200));
+    }
     const items = await itemRes.json();
+    if (!Array.isArray(items)) throw new Error('Items not array: ' + JSON.stringify(items).substring(0,200));
 
     allItems = items;
     const regularItems = items.filter(i => !i.is_extra);
@@ -460,11 +555,28 @@ async function loadMenu() {
       }))
       .filter(c => c.items.length > 0);
 
+    if (menuData.length === 0) {
+      errEl.innerHTML =
+        '<div style="text-align:center;padding:40px;color:#888">' +
+        '<div style="font-size:3rem">🍽️</div>' +
+        '<p style="margin-top:12px">No menu items found.<br>Make sure items are active and synced from the POS.</p>' +
+        '<p style="font-size:.75rem;margin-top:8px;color:#aaa">Categories: ' + categories.length + ' | Items: ' + items.length + '</p>' +
+        '</div>';
+      return;
+    }
+
     renderCategoryPills();
     renderMenu();
+
   } catch(e) {
-    document.getElementById('menuContent').innerHTML =
-      '<div style="text-align:center;padding:40px;color:#888"><div style="font-size:3rem">😕</div><p style="margin-top:12px">Could not load menu. Please try again.</p></div>';
+    errEl.innerHTML =
+      '<div style="text-align:center;padding:40px;">' +
+      '<div style="font-size:3rem">😕</div>' +
+      '<p style="margin-top:12px;color:#888">Could not load menu.</p>' +
+      '<p style="margin-top:8px;font-size:.78rem;color:#c00;background:#fff0f0;padding:10px;border-radius:8px;text-align:left;word-break:break-word">' +
+      e.message + '</p>' +
+      '<button onclick="loadMenu()" style="margin-top:14px;padding:10px 24px;background:#1a1f36;color:#fff;border:none;border-radius:10px;font-size:.9rem;cursor:pointer">Retry</button>' +
+      '</div>';
   }
 }
 
